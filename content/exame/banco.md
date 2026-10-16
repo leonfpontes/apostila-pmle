@@ -83,9 +83,3 @@ Nestas o arquivo original marca uma resposta que a revisão considera errada. Va
 - Ao errar, anote o conceito do rodapé da resposta: os erros repetidos mostram o que revisar.
 - Muitas questões usam nomes antigos (AI Platform, Cloud ML Engine). A explicação traz o nome atual; na prova vale o raciocínio, não o nome.
 - O simulador interativo (https://claude.ai/artifact/3W3WQvvz7danLX4VBWHT1n) sorteia questões por seção ou curso e marca acertos.
-
-## Fontes
-
-- Arquivo de questões enviado por Leonardo em 16/10/2026.
-- Guia oficial do exame Professional Machine Learning Engineer (versão em vigor desde 01/10/2024).
-- Revisão e classificação: Claude, 16/10/2026.

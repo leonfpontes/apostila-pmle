@@ -1,85 +1,88 @@
-import { useEffect } from "react"
-import { Link } from "react-router-dom"
-import { ArrowRightIcon, ExternalLinkIcon, LockIcon } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ExternalLinkIcon, LockIcon } from "lucide-react"
+import { arquivos } from "../../shared/contrato"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ErrorState, Footer, Loading, Page, PageHeader } from "@/components/page"
-import { useJSON } from "@/lib/data"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Etiqueta } from "@/components/shared/indicadores"
+import { LinkTexto } from "@/components/shared/navegacao"
+import { CabecalhoDaPagina, ComDados, Pagina } from "@/components/shared/pagina"
+import type { MaterialDaTurma, MateriaisDaTurma } from "@/domain/tipos"
+import { useDados } from "@/lib/dados"
+import { useTituloDaPagina } from "@/lib/site"
 
-type Item = { titulo: string; categoria: string; descricao: string; url?: string; interno?: string; privado?: string; capitulos?: string[] }
-type Materiais = { metaExame: number; fonte: string; grupos: { titulo: string; itens: Item[] }[] }
-
-export function MateriaisPage() {
-  const { data, error } = useJSON<Materiais>("materiais.json")
-  useEffect(() => {
-    document.title = "Materiais da turma · Apostila PMLE"
-    window.scrollTo(0, 0)
-  }, [])
-  if (error) return <ErrorState error={error} />
-  if (!data) return <Loading />
+function CardDeMaterial({ item }: { item: MaterialDaTurma }) {
   return (
-    <Page>
-      <PageHeader
-        crumbs={[["Materiais da turma"]]}
-        kicker="Links da planilha da turma"
-        title="Materiais da turma"
-        sub={`Tudo o que a turma usa para a certificação, num só lugar. A regra para marcar o exame: acertar acima de ${data.metaExame}% nos simulados finais.`}
-      />
-      {data.grupos.map((g) => (
-        <section key={g.titulo} className="mb-8">
-          <h2 className="mb-3 text-xl font-bold">{g.titulo}</h2>
-          <div className="grid gap-3 md:grid-cols-2">
-            {g.itens.map((it) => (
-              <Card key={it.titulo} size="sm" className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">{it.categoria}</Badge>
-                    {it.privado && (
-                      <Badge variant="outline" className="text-muted-foreground">
-                        <LockIcon /> Interno
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="mt-1 text-base">{it.titulo}</CardTitle>
-                  <CardDescription className="leading-relaxed">{it.descricao}</CardDescription>
-                </CardHeader>
-                {it.capitulos && (
-                  <CardContent>
-                    <Accordion>
-                      <AccordionItem value="cap">
-                        <AccordionTrigger className="py-1 text-sm">{it.capitulos.length} capítulos</AccordionTrigger>
-                        <AccordionContent>
-                          <ol className="list-decimal space-y-0.5 pl-5 text-sm text-muted-foreground">
-                            {it.capitulos.map((c) => (
-                              <li key={c}>{c}</li>
-                            ))}
-                          </ol>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </CardContent>
-                )}
-                <CardFooter className="mt-auto flex-wrap gap-x-4 gap-y-1 text-sm">
-                  {it.url && (
-                    <a href={it.url} target="_blank" rel="noopener" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
-                      Abrir <ExternalLinkIcon className="size-3.5" />
-                    </a>
-                  )}
-                  {it.interno && (
-                    <Link to={it.interno} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
-                      Ver na apostila <ArrowRightIcon className="size-3.5" />
-                    </Link>
-                  )}
-                  {it.privado && <span className="text-muted-foreground">{it.privado}</span>}
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </section>
-      ))}
-      <p className="text-sm text-muted-foreground">Fonte: {data.fonte}. Materiais internos da ATRA não têm link aqui porque este site é público.</p>
-      <Footer />
-    </Page>
+    <Card size="sm" className="h-full">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Etiqueta>{item.categoria}</Etiqueta>
+          {item.privado && (
+            <Etiqueta className="text-muted-foreground">
+              <LockIcon /> Interno
+            </Etiqueta>
+          )}
+        </div>
+        <CardTitle className="mt-1 text-base">{item.titulo}</CardTitle>
+        <CardDescription className="leading-relaxed">{item.descricao}</CardDescription>
+      </CardHeader>
+      {item.capitulos && (
+        <CardContent>
+          <Accordion>
+            <AccordionItem value="capitulos">
+              <AccordionTrigger className="py-1 text-sm">{item.capitulos.length} capítulos</AccordionTrigger>
+              <AccordionContent>
+                <ol className="list-decimal space-y-0.5 pl-5 text-sm text-muted-foreground">
+                  {item.capitulos.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ol>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      )}
+      <CardFooter className="mt-auto flex-wrap gap-x-4 gap-y-1 text-sm">
+        {item.url && (
+          <a href={item.url} target="_blank" rel="noopener" className="link-texto">
+            Abrir <ExternalLinkIcon className="size-3.5" />
+          </a>
+        )}
+        {item.interno && (
+          <LinkTexto para={item.interno} seta>
+            Ver na apostila
+          </LinkTexto>
+        )}
+        {item.privado && <span className="text-muted-foreground">{item.privado}</span>}
+      </CardFooter>
+    </Card>
+  )
+}
+
+export function PaginaDeMateriais() {
+  const { dados, erro } = useDados<MateriaisDaTurma>(arquivos.materiais)
+  useTituloDaPagina("Materiais da turma")
+  return (
+    <ComDados dados={dados} erro={erro}>
+      {(m) => (
+        <Pagina>
+          <CabecalhoDaPagina
+            migalhas={[["Materiais da turma"]]}
+            kicker="Links da planilha da turma"
+            titulo="Materiais da turma"
+            subtitulo={`Tudo o que a turma usa para a certificação, num só lugar. A regra para marcar o exame: acertar acima de ${m.metaExame}% nos simulados finais.`}
+          />
+          {m.grupos.map((g) => (
+            <section key={g.titulo} className="mb-8">
+              <h2 className="titulo-bloco">{g.titulo}</h2>
+              <div className="grid gap-3 md:grid-cols-2">
+                {g.itens.map((it) => (
+                  <CardDeMaterial key={it.titulo} item={it} />
+                ))}
+              </div>
+            </section>
+          ))}
+          <p className="text-sm text-muted-foreground">Fonte: {m.fonte}. Materiais internos da ATRA não têm link aqui porque este site é público.</p>
+        </Pagina>
+      )}
+    </ComDados>
   )
 }

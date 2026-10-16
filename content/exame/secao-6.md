@@ -503,8 +503,3 @@ You have trained an XGBoost model that you plan to deploy on Vertex AI for onlin
 > [!success]- Resposta: **A**
 > Para modelos de árvore como XGBoost (não diferenciáveis) o método é sampled Shapley, e um path count baixo (5) reduz a latência das explicações online. Prediction drift monitoring acompanha atribuições de features ao longo do tempo sem precisar do dataset de treino; Integrated Gradients (B/D) só serve para modelos diferenciáveis.
 > *Conceitos:* sampled Shapley, Explainable AI, feature attribution drift, Model Monitoring
-
-## Fontes
-
-- Arquivo de questões *Google Cloud Professional Machine Learning Engineer Exam Questions* enviado por Leonardo em 16/10/2026 (gabarito original, às vezes com votos da comunidade).
-- Revisão do gabarito, classificação por seção e explicações: Claude, 16/10/2026. Confiança média: dumps têm erros e a revisão também pode errar.

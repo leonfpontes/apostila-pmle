@@ -587,8 +587,3 @@ You are developing an ML model in a Vertex AI Workbench notebook. You want to tr
 > [!success]- Resposta: **A**
 > Inicializar o SDK com o experimento, registrar parâmetros e métricas e associar dataset e modelo como artefatos de entrada/saída de cada execução dá rastreabilidade de linhagem, e depois o experimento bem-sucedido vira um Vertex AI pipeline. Criar pipelines já na fase exploratória (C/D) desacelera a iteração.
 > *Conceitos:* Vertex AI Experiments, ML Metadata, artifacts, Vertex AI Pipelines
-
-## Fontes
-
-- Arquivo de questões *Google Cloud Professional Machine Learning Engineer Exam Questions* enviado por Leonardo em 16/10/2026 (gabarito original, às vezes com votos da comunidade).
-- Revisão do gabarito, classificação por seção e explicações: Claude, 16/10/2026. Confiança média: dumps têm erros e a revisão também pode errar.

@@ -101,9 +101,3 @@ Esses temas estão no guia e vão cair. Eles vêm dos cursos **8 a 12** da trilh
 1. Ao fechar cada curso, faça as questões dele (tabela "Quando praticar" no [[pmle-banco-de-questoes|banco de questões]]).
 2. Nas seções 4 e 5, que valem 42%, faça também uma segunda rodada só com as questões erradas.
 3. No dia 12 (revisão geral), faça um simulado misto de 50 questões no simulador interativo, filtrando por seção para equilibrar com os pesos acima.
-
-## Fontes
-
-- Guia oficial *Professional Machine Learning Engineer Certification Exam Guide* (Google Cloud, versão em vigor desde 01/10/2024), PDF enviado por Leonardo em 16/10/2026.
-- Contagem de questões: [[pmle-banco-de-questoes|banco de questões]], a partir do arquivo de questões enviado na mesma data.
-- Ligação com os cursos: [[trilha-pmle|trilha]] e [[trilha-pmle-cronograma]].

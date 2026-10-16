@@ -569,8 +569,3 @@ You work for a large bank that serves customers through an application hosted in
 > [!success]- Resposta: **C**
 > Implantar em private endpoints em us-central1 e asia-southeast1 reduz a latência de rede para Singapura e elimina overhead do endpoint público, e a aplicação escolhe o endpoint mais próximo. D é tentadora por também aproximar o modelo, mas com endpoint público não aproveita o caminho de menor latência dos private endpoints; GPU ou mais CPU (A/B) não resolvem a distância geográfica de um MLP pequeno.
 > *Conceitos:* private endpoint, latência, multi-region
-
-## Fontes
-
-- Arquivo de questões *Google Cloud Professional Machine Learning Engineer Exam Questions* enviado por Leonardo em 16/10/2026 (gabarito original, às vezes com votos da comunidade).
-- Revisão do gabarito, classificação por seção e explicações: Claude, 16/10/2026. Confiança média: dumps têm erros e a revisão também pode errar.

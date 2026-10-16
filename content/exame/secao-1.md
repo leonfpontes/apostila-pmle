@@ -515,8 +515,3 @@ You work for a semiconductor manufacturing company. You need to create a real-ti
 > Rotular as imagens e treinar um modelo AutoML de classificação de imagens maximiza a acurácia para inspeção visual, e o deploy online com Pub/Sub atende o requisito de tempo real. Batch diário (B) não é real-time, K-means não supervisionado (C) perde acurácia, e os dados tabulares (D) não capturam defeitos visuais.
 > *Conceitos:* AutoML, image classification, Pub/Sub, data labeling
 > *Nome atual:* Vertex AI Data Labeling Service foi descontinuado; a rotulagem hoje é feita por ferramentas próprias/parceiros e o AutoML de imagem é usado via Vertex AI.
-
-## Fontes
-
-- Arquivo de questões *Google Cloud Professional Machine Learning Engineer Exam Questions* enviado por Leonardo em 16/10/2026 (gabarito original, às vezes com votos da comunidade).
-- Revisão do gabarito, classificação por seção e explicações: Claude, 16/10/2026. Confiança média: dumps têm erros e a revisão também pode errar.

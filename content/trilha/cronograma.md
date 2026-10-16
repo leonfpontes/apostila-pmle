@@ -164,6 +164,3 @@ com 🛋️ e empurrar o resto.
 - Atualize a planilha da turma ao fim de cada dia; se mandar o PDF de novo, eu
   reajusto o cronograma.
 
-
-## Fontes
-- Montado no projeto Claude "Certificação Google" em 14/10/2026 a partir de [[trilha-pmle]] (planilha da turma de 14/10/2026)

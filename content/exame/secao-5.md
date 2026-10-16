@@ -657,8 +657,3 @@ You have a custom job that runs on Vertex AI on a weekly basis. The job is imple
 > [!success]- Resposta: **A**
 > Usar a Vertex ML Metadata API dentro do custom job para criar contexts, executions e artifacts ligados por events registra a linhagem completa de dataset, modelo e artefatos customizados, permitindo saber qual modelo gerou cada previsão. Labels no Model Registry (D) não rastreiam linhagem, e um ML Metadata TFX próprio (C) exige gerenciar infraestrutura.
 > *Conceitos:* Vertex ML Metadata, lineage, compliance
-
-## Fontes
-
-- Arquivo de questões *Google Cloud Professional Machine Learning Engineer Exam Questions* enviado por Leonardo em 16/10/2026 (gabarito original, às vezes com votos da comunidade).
-- Revisão do gabarito, classificação por seção e explicações: Claude, 16/10/2026. Confiança média: dumps têm erros e a revisão também pode errar.

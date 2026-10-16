@@ -56,6 +56,13 @@
 }
 
 :root {
+    /* Layout: larguras e alturas usadas em toda a aplicação */
+    --largura-leitura: 48rem;   /* páginas de texto e formulários */
+    --largura-pagina: 64rem;    /* páginas com grade de cards */
+    --largura-larga: 72rem;     /* documentos com índice lateral */
+    --altura-topo: 3.5rem;      /* cabeçalho fixo */
+    --largura-menu: 18rem;      /* menu lateral */
+
     /* Identidade ATRA: azul #0D99FF, azul texto #009EDB, laranja #F29113, card #E8F6FF.
        Para texto e botões usamos um azul mais escuro (#0071CE) para manter contraste AA. */
     --brand: #0D99FF;
@@ -151,12 +158,58 @@
     @apply font-sans;
     }
 }
+/* ---------- Utilitários da apostila (use em vez de repetir classes) ---------- */
+
+/* rótulo pequeno acima de títulos: "MÓDULO 1 · SEÇÃO 2" */
+@utility kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand-orange-ink);
+}
+
+/* título de bloco dentro de uma página */
+@utility titulo-bloco {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+/* link de texto com cor da marca */
+@utility link-texto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  color: var(--primary);
+  &:hover { text-decoration: underline; text-underline-offset: 2px; }
+}
+
+/* card clicável: realça a borda ao passar o mouse */
+@utility card-interativo {
+  transition: box-shadow 0.15s, background-color 0.15s;
+  &:hover { --tw-ring-color: var(--primary); }
+}
+
+/* fundo de destaque (azul claro ATRA) para chamadas e próximos passos */
+@utility superficie-destaque {
+  background-color: var(--brand-tint);
+  --tw-ring-color: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+/* compensa o cabeçalho fixo ao rolar até uma âncora */
+@utility ancora {
+  scroll-margin-top: calc(var(--altura-topo) + 1.5rem);
+}
+
 /* ---------- Conteúdo Markdown da apostila ---------- */
 .apostila { overflow-wrap: anywhere; line-height: 1.7; font-size: 1rem; }
 .apostila > :first-child { margin-top: 0; }
-.apostila h2 { font-size: 1.5rem; font-weight: 700; margin: 2.5rem 0 0.75rem; line-height: 1.25; scroll-margin-top: 5rem; letter-spacing: -0.01em; }
-.apostila h3 { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.6rem; line-height: 1.3; scroll-margin-top: 5rem; }
-.apostila h4 { font-size: 1.05rem; font-weight: 700; margin: 1.5rem 0 0.5rem; scroll-margin-top: 5rem; }
+.apostila h2 { font-size: 1.5rem; font-weight: 700; margin: 2.5rem 0 0.75rem; line-height: 1.25; scroll-margin-top: calc(var(--altura-topo) + 1.5rem); letter-spacing: -0.01em; }
+.apostila h3 { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.6rem; line-height: 1.3; scroll-margin-top: calc(var(--altura-topo) + 1.5rem); }
+.apostila h4 { font-size: 1.05rem; font-weight: 700; margin: 1.5rem 0 0.5rem; scroll-margin-top: calc(var(--altura-topo) + 1.5rem); }
 .apostila p, .apostila ul, .apostila ol { margin: 0 0 0.9rem; }
 .apostila ul { list-style: disc; padding-left: 1.4rem; }
 .apostila ol { list-style: decimal; padding-left: 1.4rem; }

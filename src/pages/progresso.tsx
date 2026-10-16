@@ -1,215 +1,215 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { DownloadIcon, RotateCcwIcon, UploadIcon } from "lucide-react"
+import { rotas } from "../../shared/contrato"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
-import { ETAPA_ICON, NextStepCard, ProgressRing } from "@/components/journey"
-import { Footer, Page, PageHeader } from "@/components/page"
-import { pct } from "@/lib/data"
-import { proximoPasso, todosModulos } from "@/lib/journey"
-import { exportProgress, importProgress, resetProgress, updateProgress, useProgress } from "@/lib/progress"
-import { useSite } from "@/lib/site"
+import { Destaque } from "@/components/shared/destaque"
+import { AnelDeProgresso, Numero } from "@/components/shared/indicadores"
+import { BotaoLink } from "@/components/shared/navegacao"
+import { CabecalhoDaPagina, Pagina } from "@/components/shared/pagina"
+import { ICONE_DA_ETAPA } from "@/features/jornada/icones"
+import type { IdDaEtapa } from "@/domain/jornada/etapas"
+import { jornadas, proximoPasso, type JornadaDaSecao } from "@/domain/jornada/jornada"
+import { progresso, ProgressStore, useProgresso } from "@/domain/progresso"
+import { useSite, useTituloDaPagina } from "@/lib/site"
+import { percentual } from "@/lib/texto"
 import { cn } from "@/lib/utils"
 
-export function ProgressoPage() {
-  const site = useSite()
-  const p = useProgress()
-  const mods = todosModulos(site, p)
-  const passo = proximoPasso(site, p)
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
-  useEffect(() => {
-    document.title = "Meu progresso · Apostila PMLE"
-    window.scrollTo(0, 0)
-  }, [])
+const COLUNAS: [IdDaEtapa, string][] = [
+  ["aulas", "Aulas"],
+  ["revisao", "Revisão"],
+  ["flashcards", "Flashcards"],
+  ["simulado", "Simulado"],
+]
 
-  const aulasTot = mods.reduce((s, m) => s + m.modulo.aulas.length, 0)
-  const aulasOk = Object.keys(p.aulas).length
-  const fcTot = site.stats.flashcards
-  const fcOk = Object.values(p.fc).filter((x) => x.ok).length
-  const qAns = Object.keys(p.q).length
-  const qOk = Object.values(p.q).filter((x) => x.ok).length
-  const modsOk = mods.filter((m) => m.done).length
+function CelulaDaEtapa({ jornada, id }: { jornada: JornadaDaSecao; id: IdDaEtapa }) {
+  const etapa = jornada.etapa(id)
+  if (!etapa) return <span className="text-muted-foreground">—</span>
+  const Icone = ICONE_DA_ETAPA[id]
+  return (
+    <Link to={etapa.destino} className={cn("inline-flex items-center gap-1.5 hover:underline", etapa.concluida ? "text-success" : "text-foreground")}>
+      <Icone className="size-3.5 opacity-70" /> {etapa.detalhe}
+    </Link>
+  )
+}
+
+function TabelaDeSecoes({ lista }: { lista: JornadaDaSecao[] }) {
+  return (
+    <Card className="mb-8 gap-0 overflow-x-auto py-0">
+      <table className="w-full min-w-[640px] text-sm">
+        <thead>
+          <tr className="border-b bg-muted/60 text-left text-xs text-muted-foreground">
+            <th className="px-4 py-2.5 font-medium">Seção</th>
+            {COLUNAS.map(([id, rotulo]) => (
+              <th key={id} className="px-3 py-2.5 font-medium">
+                {rotulo}
+              </th>
+            ))}
+            <th className="px-4 py-2.5 text-right font-medium">Próximo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {lista.map((j) => (
+            <tr key={`${j.modulo.n}-${j.secao.n}`} className="border-b last:border-0">
+              <td className="px-4 py-3">
+                <Link to={rotas.secao(j.modulo.n, j.secao.n)} className="flex items-center gap-2.5 font-medium hover:text-primary">
+                  <AnelDeProgresso valor={j.percentual} tamanho={22} />
+                  <span>
+                    <span className="text-xs text-muted-foreground">S{j.secao.n} · </span>
+                    {j.secao.titulo}
+                  </span>
+                </Link>
+              </td>
+              {COLUNAS.map(([id]) => (
+                <td key={id} className="px-3 py-3">
+                  <CelulaDaEtapa jornada={j} id={id} />
+                </td>
+              ))}
+              <td className="px-4 py-3 text-right">
+                {j.proxima ? (
+                  <BotaoLink para={j.proxima.destino} size="sm" variant="outline">
+                    {j.proxima.titulo}
+                  </BotaoLink>
+                ) : (
+                  <span className="text-xs font-semibold text-success">Concluída</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Card>
+  )
+}
+
+function DadosDoAluno() {
+  const dados = useProgresso()
+  const arquivo = useRef<HTMLInputElement>(null)
+  const [aviso, setAviso] = useState<{ ok: boolean; texto: string } | null>(null)
+
+  async function importar(f: File | undefined) {
+    if (!f) return
+    try {
+      await progresso.importar(f)
+      setAviso({ ok: true, texto: "Progresso importado." })
+    } catch (erro) {
+      setAviso({ ok: false, texto: (erro as Error).message })
+    }
+  }
 
   return (
-    <Page>
-      <PageHeader crumbs={[["Meu progresso"]]} kicker="Acompanhamento pessoal" title={p.nome ? `Progresso de ${p.nome}` : "Meu progresso"} sub="Tudo o que você já estudou, o que falta em cada seção e o próximo passo recomendado." />
+    <Card>
+      <CardContent className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-2">
+          <Label htmlFor="nome">Como quer ser chamado (opcional)</Label>
+          <Input id="nome" className="h-10" placeholder="Seu nome" defaultValue={dados.nome || ""} maxLength={40} onBlur={(e) => progresso.definirNome(e.target.value)} />
+          <p className="text-xs text-muted-foreground">Aparece só para você, neste navegador.</p>
+        </div>
+        <div className="grid content-start gap-2">
+          <span className="text-sm font-medium">Levar o progresso para outro dispositivo</span>
+          <p className="text-xs text-muted-foreground">Não há login: o progresso vive neste navegador. Exporte um arquivo e importe no outro computador ou celular.</p>
+          <div className="mt-1 flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => progresso.exportar()}>
+              <DownloadIcon /> Exportar
+            </Button>
+            <Button variant="outline" onClick={() => arquivo.current?.click()}>
+              <UploadIcon /> Importar
+            </Button>
+            <input
+              ref={arquivo}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                importar(e.target.files?.[0])
+                e.target.value = ""
+              }}
+            />
+            <Dialog>
+              <DialogTrigger render={<Button variant="ghost" className="text-destructive" />}>
+                <RotateCcwIcon /> Apagar progresso
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Apagar todo o progresso?</DialogTitle>
+                  <DialogDescription>Aulas, flashcards, simulados e questões voltam a zero neste navegador. Exporte antes se quiser guardar.</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose render={<Button variant="outline">Cancelar</Button>} />
+                  <DialogClose render={<Button variant="destructive" onClick={() => progresso.apagar()}>Apagar</Button>} />
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+          {aviso && (
+            <Alert variant={aviso.ok ? "default" : "destructive"} className="mt-2">
+              <AlertDescription>{aviso.texto}</AlertDescription>
+            </Alert>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
-      <NextStepCard passo={passo} className="mb-6" />
+export function PaginaDeProgresso() {
+  const site = useSite()
+  const dados = useProgresso()
+  useTituloDaPagina("Meu progresso")
+  const lista = jornadas(site, dados)
+  const passo = proximoPasso(site, dados)
+  const exame = ProgressStore.desempenhoNoExame(dados)
+  const aulasTotal = lista.reduce((s, j) => s + j.secao.aulas.length, 0)
+
+  return (
+    <Pagina>
+      <CabecalhoDaPagina migalhas={[["Meu progresso"]]} kicker="Acompanhamento pessoal" titulo={dados.nome ? `Progresso de ${dados.nome}` : "Meu progresso"} subtitulo="Tudo o que você já estudou, o que falta em cada seção e o próximo passo recomendado." />
+      <Destaque className="mb-6" rotulo="Seu próximo passo" titulo={passo.titulo} texto={passo.contexto} acao={{ para: passo.destino, rotulo: passo.chamada }} />
 
       <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {[
-          ["Seções concluídas", modsOk, mods.length],
-          ["Aulas estudadas", aulasOk, aulasTot],
-          ["Flashcards dominados", fcOk, fcTot],
-          ["Questões do exame", qAns, site.stats.questoes],
-        ].map(([l, v, t]) => (
-          <Card key={l as string} size="sm">
-            <CardContent>
-              <div className="text-xs text-muted-foreground">{l}</div>
-              <div className="mt-1 text-2xl font-extrabold tabular-nums">
-                {v}
-                <span className="text-sm font-medium text-muted-foreground"> / {t}</span>
-              </div>
-              <Progress value={pct(v as number, t as number)} className="mt-2" aria-label={l as string} />
-            </CardContent>
-          </Card>
-        ))}
+        <Numero legenda="Seções concluídas" valor={lista.filter((j) => j.concluida).length} total={lista.length} />
+        <Numero legenda="Aulas estudadas" valor={Object.keys(dados.aulas).length} total={aulasTotal} />
+        <Numero legenda="Flashcards dominados" valor={Object.values(dados.fc).filter((x) => x.ok).length} total={site.stats.flashcards} />
+        <Numero legenda="Questões do exame" valor={exame.respondidas} total={site.stats.questoes} />
       </div>
 
-      <h2 className="mb-3 text-xl font-bold">Seções</h2>
-      <Card className="mb-8 gap-0 overflow-x-auto py-0">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b bg-muted/60 text-left text-xs text-muted-foreground">
-              <th className="px-4 py-2.5 font-medium">Seção</th>
-              <th className="px-3 py-2.5 font-medium">Aulas</th>
-              <th className="px-3 py-2.5 font-medium">Revisão</th>
-              <th className="px-3 py-2.5 font-medium">Flashcards</th>
-              <th className="px-3 py-2.5 font-medium">Simulado</th>
-              <th className="px-4 py-2.5 text-right font-medium">Próximo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mods.map((s) => {
-              const cell = (id: string) => {
-                const e = s.etapas.find((x) => x.id === id)
-                if (!e) return <span className="text-muted-foreground">—</span>
-                const Icon = ETAPA_ICON[e.id]
-                return (
-                  <Link to={e.to} className={cn("inline-flex items-center gap-1.5 hover:underline", e.done ? "text-success" : "text-foreground")}>
-                    <Icon className="size-3.5 opacity-70" /> {e.detalhe}
-                  </Link>
-                )
-              }
-              return (
-                <tr key={`${s.curso.n}-${s.modulo.n}`} className="border-b last:border-0">
-                  <td className="px-4 py-3">
-                    <Link to={`/curso/${s.curso.n}/modulo/${s.modulo.n}`} className="flex items-center gap-2.5 font-medium hover:text-primary">
-                      <ProgressRing value={s.pct} size={22} />
-                      <span>
-                        <span className="text-xs text-muted-foreground">S{s.modulo.n} · </span>
-                        {s.modulo.titulo}
-                      </span>
-                    </Link>
-                  </td>
-                  <td className="px-3 py-3">{cell("aulas")}</td>
-                  <td className="px-3 py-3">{cell("revisao")}</td>
-                  <td className="px-3 py-3">{cell("flashcards")}</td>
-                  <td className="px-3 py-3">{cell("simulado")}</td>
-                  <td className="px-4 py-3 text-right">
-                    {s.proxima ? (
-                      <Button size="sm" variant="outline" render={<Link to={s.proxima.to} />} nativeButton={false}>
-                        {s.proxima.titulo}
-                      </Button>
-                    ) : (
-                      <span className="text-xs font-semibold text-success">Concluído</span>
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </Card>
+      <h2 className="titulo-bloco">Seções</h2>
+      <TabelaDeSecoes lista={lista} />
 
       <div className="mb-8 grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Banco de questões do exame</CardTitle>
-            <CardDescription>{qAns ? `${qAns} respondidas · ${pct(qOk, qAns)}% de acerto` : "Nenhuma questão respondida ainda."}</CardDescription>
+            <CardDescription>{exame.respondidas ? `${exame.respondidas} respondidas · ${percentual(exame.acertos, exame.respondidas)}% de acerto` : "Nenhuma questão respondida ainda."}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" render={<Link to="/questoes" />} nativeButton={false}>
+            <BotaoLink para={rotas.questoes()} variant="outline">
               Abrir o banco
-            </Button>
+            </BotaoLink>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>Trilha</CardTitle>
-            <CardDescription>{Object.keys(p.cursos).length} de 15 módulos marcados como concluídos.</CardDescription>
+            <CardDescription>
+              {Object.keys(dados.modulos).length} de {site.modulos.length} módulos marcados como concluídos.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" render={<Link to="/trilha" />} nativeButton={false}>
+            <BotaoLink para={rotas.trilha()} variant="outline">
               Atualizar na trilha
-            </Button>
+            </BotaoLink>
           </CardContent>
         </Card>
       </div>
 
-      <h2 className="mb-3 text-xl font-bold">Seus dados</h2>
-      <Card>
-        <CardContent className="grid gap-6 md:grid-cols-2">
-          <div className="grid gap-2">
-            <Label htmlFor="nome">Como quer ser chamado (opcional)</Label>
-            <Input
-              id="nome"
-              className="h-10"
-              placeholder="Seu nome"
-              defaultValue={p.nome || ""}
-              maxLength={40}
-              onBlur={(e) => updateProgress((pr) => void (pr.nome = e.target.value.trim() || undefined))}
-            />
-            <p className="text-xs text-muted-foreground">Aparece só para você, neste navegador.</p>
-          </div>
-          <div className="grid content-start gap-2">
-            <span className="text-sm font-medium">Levar o progresso para outro dispositivo</span>
-            <p className="text-xs text-muted-foreground">Não há login: o progresso vive neste navegador. Exporte um arquivo e importe no outro computador ou celular.</p>
-            <div className="mt-1 flex flex-wrap gap-2">
-              <Button variant="outline" onClick={exportProgress}>
-                <DownloadIcon /> Exportar
-              </Button>
-              <Button variant="outline" onClick={() => fileRef.current?.click()}>
-                <UploadIcon /> Importar
-              </Button>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="application/json,.json"
-                className="hidden"
-                onChange={async (e) => {
-                  const f = e.target.files?.[0]
-                  e.target.value = ""
-                  if (!f) return
-                  try {
-                    await importProgress(f)
-                    setMsg({ ok: true, text: "Progresso importado." })
-                  } catch (err) {
-                    setMsg({ ok: false, text: (err as Error).message })
-                  }
-                }}
-              />
-              <Dialog>
-                <DialogTrigger render={<Button variant="ghost" className="text-destructive" />}>
-                  <RotateCcwIcon /> Apagar progresso
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Apagar todo o progresso?</DialogTitle>
-                    <DialogDescription>Aulas, flashcards, simulados e questões voltam a zero neste navegador. Exporte antes se quiser guardar.</DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose render={<Button variant="outline">Cancelar</Button>} />
-                    <DialogClose render={<Button variant="destructive" onClick={resetProgress}>Apagar</Button>} />
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
-            {msg && (
-              <Alert variant={msg.ok ? "default" : "destructive"} className="mt-2">
-                <AlertDescription>{msg.text}</AlertDescription>
-              </Alert>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      <Footer />
-    </Page>
+      <h2 className="titulo-bloco">Seus dados</h2>
+      <DadosDoAluno />
+    </Pagina>
   )
 }

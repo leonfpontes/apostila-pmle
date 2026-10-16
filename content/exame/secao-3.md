@@ -1102,8 +1102,3 @@ You work for a rapidly growing social media company. Your team builds TensorFlow
 > [!success]- Resposta: **A**
 > Modelos de recomendação com 100 mil features categóricas são dominados por embeddings grandes, e TPU Pods com a TPUEmbedding API distribuem as tabelas de embedding de forma muito eficiente, minimizando tempo de treino em escala. GPUs com tf.nn.embedding_lookup (D) escalam pior para embeddings gigantes, e CPUs no GKE repetem o problema atual.
 > *Conceitos:* TPU, TPUEmbedding, recommender, treino distribuído
-
-## Fontes
-
-- Arquivo de questões *Google Cloud Professional Machine Learning Engineer Exam Questions* enviado por Leonardo em 16/10/2026 (gabarito original, às vezes com votos da comunidade).
-- Revisão do gabarito, classificação por seção e explicações: Claude, 16/10/2026. Confiança média: dumps têm erros e a revisão também pode errar.
