@@ -17,7 +17,7 @@ Resumos de aula, flashcards, simulados e um banco de questões no estilo da prov
 ![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Base%20UI-000000?logo=shadcnui&logoColor=white)
 ![Vercel](https://img.shields.io/badge/deploy-Vercel-000000?logo=vercel&logoColor=white)
 
-[**Ver o site**](https://apostila-pmle.vercel.app) · [Documentação](doc/README.md) · [Arquitetura](doc/arquitetura.md) · [Design system](doc/design-system.md)
+[**Ver o site**](https://apostila-pmle-seven.vercel.app) · [Documentação](doc/README.md) · [Arquitetura](doc/arquitetura.md) · [Design system](doc/design-system.md)
 
 </div>
 
