@@ -38,7 +38,7 @@ Resumos de aula, flashcards, simulados e um banco de questões no estilo da prov
 
 <img src="doc/img/inicio-escuro.jpg" alt="Página inicial no tema escuro, com o próximo passo do aluno e o progresso de cada seção" width="100%">
 
-| | |
+| Recurso | Como funciona |
 |---|---|
 | 🧭 **Jornada guiada** | Cada seção segue o mesmo caminho: estudar as aulas → revisar → fixar com flashcards → testar no simulado. A página inicial sempre mostra o **próximo passo**, calculado a partir do que o aluno já fez. |
 | 📚 **Aulas resumidas** | Resumo em português de cada vídeo, com relevância para a prova (★★★), índice lateral e a transcrição original em inglês ao lado. |
