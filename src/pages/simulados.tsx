@@ -7,6 +7,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Markdown } from "@/components/markdown"
 import { ErrorState, Footer, Loading, NotFound, Page, PageHeader } from "@/components/page"
 import { Quiz, QBadge } from "@/components/quiz"
+import { WhatsNext } from "@/components/journey"
+import { META_SIMULADO } from "@/lib/journey"
 import { tituloLimpo, useJSON, type Simulado } from "@/lib/data"
 import { updateProgress, useProgress } from "@/lib/progress"
 import { useCurso, useSite } from "@/lib/site"
@@ -129,6 +131,26 @@ export function SimuladoPage() {
           })
         }
       />
+      {prev && (() => {
+        const mod = c.modulos!.find((x) => x.n === m)!
+        const nextMod = c.modulos!.find((x) => x.n > m && x.aulas.length)
+        const revisao = mod.materiais.find((x) => x.tipo === "revisao" || x.tipo === "glossario")
+        return prev.best >= META_SIMULADO ? (
+          <WhatsNext
+            titulo={`Módulo ${m} fechado com ${prev.best}%`}
+            texto={nextMod ? `Siga para o módulo ${nextMod.n}: ${nextMod.titulo}.` : "Feche o curso com as armadilhas e pratique as questões do exame."}
+            to={nextMod ? `/curso/${n}/modulo/${nextMod.n}` : `/curso/${n}/armadilhas`}
+            cta={nextMod ? "Próximo módulo" : "Revisão final"}
+          />
+        ) : (
+          <WhatsNext
+            titulo={`Sua melhor nota ainda está abaixo de ${META_SIMULADO}%`}
+            texto="Revise o módulo, refaça os flashcards que errou e tente o simulado de novo."
+            to={revisao ? `/curso/${n}/modulo/${m}/${revisao.tipo}` : `/curso/${n}/modulo/${m}/flashcards`}
+            cta="Revisar o módulo"
+          />
+        )
+      })()}
       {sim.fechamento && (
         <Accordion className="mt-8 rounded-xl border border-brand-orange/40 bg-brand-orange/10 px-4">
           <AccordionItem value="erros">

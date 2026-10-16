@@ -28,6 +28,8 @@ const DROP_HEADINGS = [
   /^Log$/i,
   /^Como o material é registrado$/i,
   /^Dúvidas em aberto$/i,
+  /^Fontes$/i, // referências internas do vault
+  /^Ações \/ próximos passos$/i, // pendências pessoais de quem fez as notas
 ];
 const DROP_PER_FILE = { 'trilha/trilha.md': [/^Fontes$/i] };
 
@@ -122,6 +124,8 @@ function cleanMd(body, file = '') {
   let md = body.replace(/<!--[\s\S]*?-->/g, '');
   md = dropSections(md, DROP_PER_FILE[file] || []);
   md = md.replace(/^\s*#\s+.*\n+/, ''); // o H1 vira o título da página
+  // parágrafo de navegação do vault ("Material de estudo do Módulo N … Faz parte de …"): o site já tem abas
+  md = md.replace(/^\s*Material de estudo do Módulo[^\n]*(\n(?!\n)[^\n]*)*\n+/, '');
   md = callouts(md);
   md = wikilinks(md);
   return md.replace(/\n{3,}/g, '\n\n').trim() + '\n';
@@ -163,6 +167,21 @@ function loadNote(rel) {
   const { meta, body } = frontmatter(read(p));
   const h1 = body.match(/^#\s+(.*)$/m);
   return { meta, body, title: meta.title || (h1 ? h1[1] : rel), rel };
+}
+
+// A ficha no topo de cada aula (| | | Tema / Curso / Data / Duração …) vira
+// metadado; o site mostra tema e duração no cabeçalho em vez da tabela.
+function extractAulaMeta(md) {
+  const m = md.match(/^\|\s*\|\s*\|\n\|[-|\s]+\|\n((?:\|.*\|\n?)+)/);
+  if (!m) return { meta: {}, md };
+  const meta = {};
+  for (const line of m[1].trim().split('\n')) {
+    const [k, v] = splitRow(line);
+    const key = k.replace(/\*/g, '').trim().toLowerCase();
+    if (key === 'tema') meta.tema = v.replace(/\*\*/g, '');
+    if (key === 'duração') meta.duracao = v.replace(/\*\*/g, '');
+  }
+  return { meta, md: md.slice(m[0].length).replace(/^\s+/, '') };
 }
 
 // ---------------------------------------------------------------------------
@@ -431,7 +450,7 @@ for (const [n, c] of Object.entries(cursosCfg)) {
 }
 for (const [name, rel] of VAULT_TO_CONTENT) {
   const t = noteTitle(rel);
-  if (t) TITLES.set(name, t);
+  if (t) TITLES.set(name, t.replace(/^Google AI\/ML — /, ''));
 }
 
 // 2) Trilha, cronograma, exame
@@ -512,7 +531,10 @@ for (const t of trilhaCursos) {
       const docTitle = `Aula ${id} — ${titulo}`;
       const aula = { id, modulo: +mm, titulo, data, resumo: note.meta.summary || '', transcricao: exists(tFile) };
       aulas.push(aula);
-      addDoc({ id: `c${t.n}-aula-${id}`, title: docTitle, route: `${base}/aula/${id}`, kind: 'Aula', md: cleanMd(note.body), summary: note.meta.summary });
+      const { meta: aulaMeta, md: aulaMd } = extractAulaMeta(cleanMd(note.body));
+      aula.tema = aulaMeta.tema || '';
+      aula.duracao = aulaMeta.duracao || '';
+      addDoc({ id: `c${t.n}-aula-${id}`, title: docTitle, route: `${base}/aula/${id}`, kind: 'Aula', md: aulaMd, summary: note.meta.summary });
       if (aula.transcricao) {
         const tn = loadNote(path.relative(CONTENT, tFile));
         writeJSON(`docs/c${t.n}-transc-${id}.json`, { id: `c${t.n}-transc-${id}`, title: `${docTitle} · transcrição`, route: `${base}/aula/${id}/transcricao`, kind: 'Transcrição', md: cleanMd(tn.body) });

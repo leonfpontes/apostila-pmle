@@ -9,11 +9,13 @@ export type Progresso = {
   q: Record<string, Resultado> // banco de questões do exame: "Q63"
   cursos: Record<string, number> // cursos da trilha marcados como concluídos
   aulas: Record<string, number> // aulas marcadas como estudadas: "c1-5.3"
+  vistos: Record<string, number> // revisão/glossário do módulo aberto: "c1-m2"
+  nome?: string // como o aluno quer ser chamado (opcional, só local)
   last?: { route: string; title: string }
 }
 
 const KEY = "pmle:v1"
-const empty = (): Progresso => ({ fc: {}, sim: {}, q: {}, cursos: {}, aulas: {} })
+const empty = (): Progresso => ({ fc: {}, sim: {}, q: {}, cursos: {}, aulas: {}, vistos: {} })
 
 function read(): Progresso {
   try {
@@ -51,4 +53,33 @@ export function useProgress() {
     },
     () => snapshot
   )
+}
+
+// Exportar/importar: como não há login, é assim que o aluno leva o progresso para outro dispositivo.
+export function exportProgress() {
+  const blob = new Blob([JSON.stringify({ app: "apostila-pmle", versao: 1, exportadoEm: new Date().toISOString(), progresso: snapshot }, null, 2)], {
+    type: "application/json",
+  })
+  const a = document.createElement("a")
+  a.href = URL.createObjectURL(blob)
+  a.download = `progresso-apostila-pmle-${new Date().toISOString().slice(0, 10)}.json`
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+export async function importProgress(file: File) {
+  const data = JSON.parse(await file.text())
+  const p = data?.progresso
+  if (data?.app !== "apostila-pmle" || !p || typeof p !== "object") throw new Error("Este arquivo não é um progresso exportado da apostila.")
+  updateProgress((cur) => {
+    Object.assign(cur, empty(), p)
+  })
+}
+
+export function resetProgress() {
+  updateProgress((cur) => {
+    const nome = cur.nome
+    Object.assign(cur, empty(), { nome })
+    delete cur.last
+  })
 }

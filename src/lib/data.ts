@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 export type Material = { tipo: "revisao" | "glossario" | "flashcards" | "simulado"; total?: number }
 export type ItemModulo = { id: string; titulo: string; tipo: string; estrelas: number }
 export type Modulo = { n: number; titulo: string; nota: string; itens: ItemModulo[]; aulas: string[]; materiais: Material[] }
-export type Aula = { id: string; modulo: number; titulo: string; data: string; resumo: string; transcricao: boolean }
+export type Aula = { id: string; modulo: number; titulo: string; data: string; resumo: string; transcricao: boolean; tema?: string; duracao?: string }
 export type Curso = {
   n: number
   titulo: string

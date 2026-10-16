@@ -1,21 +1,33 @@
 import { useEffect } from "react"
 import { Link } from "react-router-dom"
-import { ArrowRightIcon, BookOpenIcon, CalendarDaysIcon, LayersIcon, ListChecksIcon, PlayIcon, TargetIcon, TriangleAlertIcon } from "lucide-react"
+import { ArrowRightIcon, CompassIcon, HistoryIcon, TriangleAlertIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { ETAPA_ICON, NextStepCard, ProgressRing } from "@/components/journey"
 import { Footer, Page } from "@/components/page"
-import { MATERIAIS, pct, plural } from "@/lib/data"
+import { pct, plural } from "@/lib/data"
+import { proximoPasso, todosModulos } from "@/lib/journey"
 import { useProgress } from "@/lib/progress"
 import { useSite } from "@/lib/site"
 import { cn } from "@/lib/utils"
+
+const COMO = [
+  ["aulas", "Estude as aulas", "Resumo em português de cada aula"],
+  ["revisao", "Revise o módulo", "Armadilhas e glossário"],
+  ["flashcards", "Fixe com flashcards", "Revisão ativa por blocos"],
+  ["simulado", "Teste no simulado", "30 questões, meta de 80%"],
+] as const
 
 export function Home() {
   const site = useSite()
   const p = useProgress()
   const s = site.stats
   const c1 = site.cursos.find((c) => c.material)!
+  const mods = todosModulos(site, p)
+  const passo = proximoPasso(site, p)
+  const novo = Object.keys(p.aulas).length + Object.keys(p.fc).length + Object.keys(p.sim).length + Object.keys(p.q).length === 0
   const done = Object.keys(p.cursos).length
   const qAns = Object.keys(p.q).length
   const qOk = Object.values(p.q).filter((x) => x.ok).length
@@ -25,31 +37,26 @@ export function Home() {
 
   return (
     <Page>
-      <section className="relative mb-8 overflow-hidden rounded-3xl border bg-card p-7 shadow-sm md:p-12">
+      <section className="relative mb-6 overflow-hidden rounded-3xl border bg-card p-7 shadow-sm md:p-10">
         <div className="relative z-10 max-w-xl">
           <div className="mb-2 text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Trilha Google Cloud · Professional ML Engineer</div>
           <h1 className="font-heading text-4xl leading-[1.05] font-extrabold tracking-tight text-balance md:text-5xl">
-            Bem-vindo à apostila da certificação PMLE
+            {p.nome ? `Olá, ${p.nome}. Bora estudar?` : "Apostila da certificação PMLE"}
           </h1>
           <p className="mt-4 text-lg text-brand-text md:text-xl">
-            Resumos de cada aula, glossários, flashcards, simulados e {s.questoes} questões no estilo da prova, organizados pelos 15 cursos da trilha.
+            O material da turma ATRA para a prova Professional Machine Learning Engineer: aulas resumidas, flashcards, simulados e {s.questoes} questões no estilo do exame.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {p.last ? (
-              <Button size="lg" className="h-11 px-4 text-base" render={<Link to={p.last.route} />} nativeButton={false}>
-                <PlayIcon /> Continuar: {p.last.title.slice(0, 40)}
+          {novo && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Button size="lg" className="h-11 px-4 text-base" render={<Link to="/comece" />} nativeButton={false}>
+                <CompassIcon /> Comece aqui
               </Button>
-            ) : (
-              <Button size="lg" className="h-11 px-4 text-base" render={<Link to={`/curso/${c1.n}`} />} nativeButton={false}>
-                <PlayIcon /> Começar pelo curso {c1.n}
+              <Button size="lg" variant="outline" className="h-11 px-4 text-base" render={<Link to={passo.to} />} nativeButton={false}>
+                Ir direto para a primeira aula
               </Button>
-            )}
-            <Button size="lg" variant="outline" className="h-11 px-4 text-base" render={<Link to="/questoes" />} nativeButton={false}>
-              <TargetIcon /> Praticar questões
-            </Button>
-          </div>
+            </div>
+          )}
         </div>
-        {/* composição da capa ATRA: círculos desfocados e diamantes */}
         <div aria-hidden className="pointer-events-none absolute top-1/2 -right-24 hidden size-96 -translate-y-1/2 opacity-60 xl:block 2xl:-right-4 2xl:opacity-100">
           <div className="absolute top-10 right-16 size-60 rounded-full bg-brand opacity-15 blur-md" />
           <div className="absolute top-36 right-0 size-52 rounded-full bg-brand-orange opacity-20 blur-md" />
@@ -58,27 +65,86 @@ export function Home() {
         </div>
       </section>
 
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {[
-          [15, "cursos na trilha"],
-          [s.aulas, "aulas resumidas"],
-          [s.flashcards, "flashcards"],
-          [s.simulado, "questões de simulado"],
-          [s.questoes, "questões do exame"],
-        ].map(([n, l]) => (
-          <div key={l} className="rounded-2xl bg-brand-tint p-4">
-            <div className="text-3xl font-extrabold text-primary tabular-nums">{n}</div>
-            <div className="text-sm text-muted-foreground">{l}</div>
-          </div>
+      {!novo && <NextStepCard passo={passo} className="mb-4" />}
+      {!novo && p.last && p.last.route !== passo.to && (
+        <Link to={p.last.route} className="mb-8 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
+          <HistoryIcon className="size-4" /> Voltar para onde parou: <span className="font-medium text-foreground">{p.last.title}</span>
+        </Link>
+      )}
+
+      {novo && (
+        <section className="mb-8">
+          <h2 className="mb-3 text-xl font-bold">Como funciona cada módulo</h2>
+          <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {COMO.map(([id, t, d], i) => {
+              const Icon = ETAPA_ICON[id]
+              return (
+                <li key={id} className="flex gap-3 rounded-2xl bg-brand-tint p-4">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-sm font-extrabold text-primary-foreground">{i + 1}</span>
+                  <span>
+                    <span className="flex items-center gap-1.5 font-semibold">
+                      <Icon className="size-4 text-primary" /> {t}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{d}</span>
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
+          <Link to="/comece" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            Ver o guia completo <ArrowRightIcon className="size-3.5" />
+          </Link>
+        </section>
+      )}
+
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+        <h2 className="text-xl font-bold">
+          Curso {c1.n}: {c1.titulo}
+        </h2>
+        <Link to="/progresso" className="text-sm font-medium text-primary hover:underline">
+          Ver meu progresso
+        </Link>
+      </div>
+      <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {mods.map((st) => (
+          <Link key={st.modulo.n} to={`/curso/${c1.n}/modulo/${st.modulo.n}`} className="group">
+            <Card size="sm" className={cn("h-full transition-colors group-hover:ring-primary", passo.to.startsWith(`/curso/${c1.n}/modulo/${st.modulo.n}`) && "ring-primary/50")}>
+              <CardHeader>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Módulo {st.modulo.n}</div>
+                    <CardTitle className="mt-0.5 leading-snug">{st.modulo.titulo}</CardTitle>
+                  </div>
+                  <ProgressRing value={st.pct} size={28} />
+                </div>
+                <CardDescription>
+                  {st.done ? "Concluído" : st.proxima ? `Próximo: ${st.proxima.titulo.toLowerCase()}` : ""} · {plural(st.modulo.aulas.length, "aula", "aulas")}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
         ))}
+        {c1.armadilhas && (
+          <Link to={`/curso/${c1.n}/armadilhas`} className="group">
+            <Card size="sm" className="h-full bg-brand-tint transition-colors group-hover:ring-primary">
+              <CardHeader>
+                <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Revisão final</div>
+                <CardTitle className="flex items-center gap-2">
+                  <TriangleAlertIcon className="size-4 text-brand-orange" /> Armadilhas e cheat-sheet
+                </CardTitle>
+                <CardDescription>Para a véspera da prova: as armadilhas do curso e as tabelas mais cobradas.</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Sua trilha</CardTitle>
+            <CardTitle>A trilha completa</CardTitle>
             <CardDescription>
-              {done ? `Você marcou ${plural(done, "curso concluído", "cursos concluídos")} de 15.` : "Marque na página da trilha os cursos que já concluiu."}
+              15 cursos até a prova. {done ? `Você marcou ${plural(done, "curso concluído", "cursos concluídos")}.` : "Os cursos em azul já têm material."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -89,9 +155,10 @@ export function Home() {
                     render={
                       <Link
                         to={`/curso/${c.n}`}
+                        aria-label={`Curso ${c.n}: ${c.titulo}`}
                         className={cn(
                           "grid size-7 place-items-center rounded-full text-xs font-bold",
-                          p.cursos[c.n] ? "bg-success text-white" : c.material ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
+                          p.cursos[c.n] ? "bg-success text-white" : c.material ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}
                       />
                     }
@@ -106,7 +173,7 @@ export function Home() {
           </CardContent>
           <CardFooter>
             <Link to="/trilha" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              Ver a trilha completa <ArrowRightIcon className="size-4" />
+              Ver a trilha <ArrowRightIcon className="size-4" />
             </Link>
           </CardFooter>
         </Card>
@@ -114,9 +181,7 @@ export function Home() {
           <CardHeader>
             <CardTitle>Banco de questões do exame</CardTitle>
             <CardDescription>
-              {qAns
-                ? `Você respondeu ${qAns} de ${s.questoes} questões e acertou ${pct(qOk, qAns)}%.`
-                : `${s.questoes} questões em inglês, como na prova, com gabarito revisado e explicação em português.`}
+              {qAns ? `Você respondeu ${qAns} de ${s.questoes} e acertou ${pct(qOk, qAns)}%.` : `${s.questoes} questões em inglês, como na prova, com explicação em português.`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -128,64 +193,6 @@ export function Home() {
             </Link>
           </CardFooter>
         </Card>
-      </div>
-
-      <h2 className="mt-10 mb-4 text-xl font-bold">
-        Curso {c1.n}: {c1.titulo}
-      </h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {c1.modulos!
-          .filter((m) => m.aulas.length)
-          .map((m) => (
-            <Link key={m.n} to={`/curso/${c1.n}/modulo/${m.n}`} className="group">
-              <Card className="h-full transition-colors group-hover:ring-primary">
-                <CardHeader>
-                  <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Módulo {m.n}</div>
-                  <CardTitle className="leading-snug">{m.titulo}</CardTitle>
-                  <CardDescription>
-                    {plural(m.aulas.length, "aula", "aulas")}
-                    {m.materiais.length ? " · " + m.materiais.map((x) => MATERIAIS[x.tipo].label.toLowerCase()).join(", ") : ""}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
-        {c1.armadilhas && (
-          <Link to={`/curso/${c1.n}/armadilhas`} className="group">
-            <Card className="h-full bg-brand-tint transition-colors group-hover:ring-primary">
-              <CardHeader>
-                <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Revisão final</div>
-                <CardTitle className="flex items-center gap-2">
-                  <TriangleAlertIcon className="size-4 text-brand-orange" /> Armadilhas e cheat-sheet
-                </CardTitle>
-                <CardDescription>As armadilhas do curso inteiro e as tabelas mais cobradas.</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-        )}
-      </div>
-
-      <h2 className="mt-10 mb-4 text-xl font-bold">Atalhos de estudo</h2>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[
-          ["/flashcards", LayersIcon, "Flashcards", `${s.flashcards} cartões por bloco`],
-          ["/simulados", ListChecksIcon, "Simulados", "30 questões por módulo"],
-          ["/exame", BookOpenIcon, "Guia do exame", "Pesos e subseções"],
-          ["/cronograma", CalendarDaysIcon, "Cronograma", "Plano dia a dia"],
-        ].map(([to, Icon, t, d]) => {
-          const I = Icon as typeof LayersIcon
-          return (
-            <Link key={to as string} to={to as string} className="group">
-              <Card size="sm" className="h-full transition-colors group-hover:ring-primary">
-                <CardHeader>
-                  <I className="mb-1 size-5 text-primary" />
-                  <CardTitle>{t as string}</CardTitle>
-                  <CardDescription>{d as string}</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          )
-        })}
       </div>
       <Footer />
     </Page>

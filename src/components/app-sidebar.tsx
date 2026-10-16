@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom"
 import {
   BookOpenIcon,
   CalendarDaysIcon,
+  ChartNoAxesColumnIcon,
+  CompassIcon,
   ChevronRightIcon,
   GraduationCapIcon,
   HomeIcon,
@@ -30,6 +32,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { MATERIAIS } from "@/lib/data"
 import { useProgress } from "@/lib/progress"
+import { moduloStatus } from "@/lib/journey"
+import { ProgressRing } from "@/components/journey"
 import { useSite } from "@/lib/site"
 
 export function AppSidebar() {
@@ -62,6 +66,8 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu>
             {nav("/", "Início", HomeIcon)}
+            {nav("/comece", "Comece aqui", CompassIcon)}
+            {nav("/progresso", "Meu progresso", ChartNoAxesColumnIcon)}
             {nav("/trilha", "Trilha dos 15 cursos", RouteIcon)}
             {nav("/cronograma", "Cronograma", CalendarDaysIcon)}
           </SidebarMenu>
@@ -86,7 +92,8 @@ export function AppSidebar() {
                       >
                         <span className="w-6 shrink-0 text-xs font-semibold text-muted-foreground tabular-nums">M{m.n}</span>
                         <span className="line-clamp-2 leading-snug">{m.titulo}</span>
-                        <ChevronRightIcon className="ml-auto transition-transform group-data-[panel-open]/trigger:rotate-90" />
+                        <ProgressRing value={moduloStatus(c, m, progress).pct} size={16} className="ml-auto" />
+                        <ChevronRightIcon className="transition-transform group-data-[panel-open]/trigger:rotate-90" />
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>

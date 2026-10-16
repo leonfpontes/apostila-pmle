@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useTheme } from "@/lib/theme"
 import { FileTextIcon, MoonIcon, SearchIcon, SunIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -36,7 +36,10 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur md:px-4">
       <SidebarTrigger aria-label="Abrir ou fechar o menu" />
-      <Separator orientation="vertical" className="mr-1 h-5!" />
+      <Link to="/" className="shrink-0 md:hidden" aria-label="Início">
+        <img src={`${import.meta.env.BASE_URL}assets/atra-mark.png`} alt="" className="h-6 w-auto" />
+      </Link>
+      <Separator orientation="vertical" className="mr-1 hidden h-5! md:block" />
       <Button
         variant="outline"
         className="h-9 flex-1 justify-start gap-2 text-muted-foreground md:max-w-md"

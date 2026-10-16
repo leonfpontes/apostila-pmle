@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { MdInline } from "@/components/markdown"
+import { WhatsNext } from "@/components/journey"
 import { Kbd } from "@/components/kbd"
 import { ErrorState, Footer, Loading, NotFound, Page, PageHeader } from "@/components/page"
 import { pct, shuffle, tituloLimpo, useJSON, type Deck } from "@/lib/data"
@@ -85,13 +86,13 @@ export function FlashcardsPage() {
     <Page narrow>
       <PageHeader crumbs={[...cursoCrumbs(n), [`Módulo ${m}`, `/curso/${n}/modulo/${m}`], ["Flashcards"]]} kicker={`Flashcards · Módulo ${m}`} title={tituloLimpo(deck.titulo)} />
       <ModuloTabs n={n} m={m} active="flashcards" />
-      <Trainer deck={deck} prefix={`c${n}-m${m}`} key={`${n}-${m}`} />
+      <Trainer deck={deck} prefix={`c${n}-m${m}`} key={`${n}-${m}`} next={c.modulos!.find((x) => x.n === m)!.materiais.some((x) => x.tipo === "simulado") ? `/curso/${n}/modulo/${m}/simulado` : undefined} />
       <Footer />
     </Page>
   )
 }
 
-function Trainer({ deck, prefix }: { deck: Deck; prefix: string }) {
+function Trainer({ deck, prefix, next }: { deck: Deck; prefix: string; next?: string }) {
   const progress = useProgress()
   const all = useMemo<Card_[]>(
     () => deck.blocos.flatMap((b, bi) => b.cards.map((card, ci) => ({ ...card, bloco: bi, key: `${prefix}:${bi}:${ci}` }))),
@@ -249,6 +250,11 @@ function Trainer({ deck, prefix }: { deck: Deck; prefix: string }) {
                 <RotateCcwIcon /> Recomeçar
               </Button>
             </div>
+            {next && (
+              <div className="w-full text-left">
+                <WhatsNext titulo="Próximo passo: testar no simulado" texto="Quando dominar a maior parte dos cartões, confira se o conteúdo ficou com as 30 questões do módulo." to={next} cta="Ir para o simulado" />
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (

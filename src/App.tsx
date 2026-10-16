@@ -15,6 +15,8 @@ import { AllFlashcards, FlashcardsPage } from "@/pages/flashcards"
 import { AllSimulados, SimuladoPage } from "@/pages/simulados"
 import { BancoPage } from "@/pages/banco"
 import { BuscaPage } from "@/pages/busca"
+import { ComecePage } from "@/pages/comece"
+import { ProgressoPage } from "@/pages/progresso"
 import { useParams } from "react-router-dom"
 
 function Armadilhas() {
@@ -52,12 +54,14 @@ export default function App() {
     <SiteContext.Provider value={site}>
       <SidebarProvider style={{ "--sidebar-width": "18rem" } as React.CSSProperties}>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="min-w-0">
           <SiteHeader />
           <RememberLast />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/trilha" element={<Trilha />} />
+            <Route path="/comece" element={<ComecePage />} />
+            <Route path="/progresso" element={<ProgressoPage />} />
             <Route path="/cronograma" element={<DocPage id="cronograma" crumbs={[["Trilha", "/trilha"]]} />} />
             <Route path="/exame" element={<DocPage id="exame-guia" crumbs={[["Exame PMLE"]]} />} />
             <Route path="/questoes" element={<BancoPage />} />
