@@ -1,0 +1,22 @@
+name: CI
+
+# Checa tipos, lint e build a cada push e pull request.
+# O deploy é feito pela integração Git da Vercel: produção a cada push na main,
+# preview a cada pull request.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx oxlint src
+      - run: npm run build

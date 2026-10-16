@@ -1,0 +1,13 @@
+{
+  "_leia": "Cursos da trilha que já têm material. O título, a duração e o roteiro de cada curso vêm de content/trilha/trilha.md. Para incluir material de um novo curso, acrescente uma entrada aqui (a chave é o número do curso na trilha) e rode `npm run sync && npm run build`.",
+  "1": {
+    "slug": "01-intro-ai-ml-google-cloud",
+    "nomeCurto": "Intro to AI & ML on Google Cloud",
+    "vault": {
+      "hub": "10-notes/curso-intro-ai-ml-google-cloud.md",
+      "aulas": "50-aulas/intro-ai-ml-google-cloud",
+      "modulos": "10-notes/google-ai-ml-modulo-{n}-{tipo}.md",
+      "armadilhas": "10-notes/google-ai-ml-armadilhas-e-cheatsheet.md"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apostila PMLE · ATRA</title>
+    <meta name="description" content="Apostila interativa da trilha Professional Machine Learning Engineer do Google Cloud: resumos de aulas, glossários, flashcards, simulados e banco de questões." />
+    <link rel="icon" type="image/png" href="./assets/atra-icon.png" />
+    <meta name="theme-color" content="#0D99FF" />
+    <script>
+      try {
+        var t = localStorage.getItem("pmle:theme")
+        if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark")
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
