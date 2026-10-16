@@ -4,6 +4,7 @@ import {
   CalendarDaysIcon,
   ChartNoAxesColumnIcon,
   CompassIcon,
+  LinkIcon,
   ChevronRightIcon,
   GraduationCapIcon,
   HomeIcon,
@@ -68,7 +69,7 @@ export function AppSidebar() {
             {nav("/", "Início", HomeIcon)}
             {nav("/comece", "Comece aqui", CompassIcon)}
             {nav("/progresso", "Meu progresso", ChartNoAxesColumnIcon)}
-            {nav("/trilha", "Trilha dos 15 cursos", RouteIcon)}
+            {nav("/trilha", "Trilha dos 15 módulos", RouteIcon)}
             {nav("/cronograma", "Cronograma", CalendarDaysIcon)}
           </SidebarMenu>
         </SidebarGroup>
@@ -77,7 +78,7 @@ export function AppSidebar() {
           .filter((c) => c.material)
           .map((c) => (
             <SidebarGroup key={c.n}>
-              <SidebarGroupLabel>Curso {c.n}</SidebarGroupLabel>
+              <SidebarGroupLabel>Módulo {c.n}</SidebarGroupLabel>
               <SidebarMenu>
                 {nav(`/curso/${c.n}`, c.nomeCurto, GraduationCapIcon)}
                 {c.armadilhas && nav(`/curso/${c.n}/armadilhas`, "Armadilhas e cheat-sheet", TriangleAlertIcon)}
@@ -90,7 +91,7 @@ export function AppSidebar() {
                         render={<SidebarMenuButton isActive={is(base)} />}
                         className="group/trigger h-auto min-h-8 py-1.5"
                       >
-                        <span className="w-6 shrink-0 text-xs font-semibold text-muted-foreground tabular-nums">M{m.n}</span>
+                        <span className="w-6 shrink-0 text-xs font-semibold text-muted-foreground tabular-nums">S{m.n}</span>
                         <span className="line-clamp-2 leading-snug">{m.titulo}</span>
                         <ProgressRing value={moduloStatus(c, m, progress).pct} size={16} className="ml-auto" />
                         <ChevronRightIcon className="transition-transform group-data-[panel-open]/trigger:rotate-90" />
@@ -136,13 +137,14 @@ export function AppSidebar() {
           <SidebarGroupLabel>Praticar</SidebarGroupLabel>
           <SidebarMenu>
             {nav("/flashcards", "Flashcards", LayersIcon)}
-            {nav("/simulados", "Simulados dos módulos", ListChecksIcon)}
+            {nav("/simulados", "Simulados das seções", ListChecksIcon)}
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Exame PMLE</SidebarGroupLabel>
           <SidebarMenu>
             {nav("/exame", "Guia do exame", BookOpenIcon)}
+            {nav("/materiais", "Materiais da turma", LinkIcon)}
             <SidebarMenuItem>
               <SidebarMenuButton isActive={pathname.startsWith("/questoes")} render={<Link to="/questoes" onClick={close} />}>
                 <TargetIcon />

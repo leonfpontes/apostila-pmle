@@ -11,6 +11,7 @@ import { Quiz, QBadge, type QuizQuestion } from "@/components/quiz"
 import { pct, shuffle, useJSON, type Banco, type QuestaoPMLE } from "@/lib/data"
 import { updateProgress, useProgress } from "@/lib/progress"
 import { useSite } from "@/lib/site"
+import { cn } from "@/lib/utils"
 
 const record = (q: QuizQuestion, ok: boolean, sel: string[]) =>
   updateProgress((p) => {
@@ -30,9 +31,9 @@ function useToQuiz() {
     meta: (
       <>
         <QBadge tone="blue">{q.id}</QBadge>
-        <QBadge>Seção {q.sub}</QBadge>
+        <QBadge>Guia do exame {q.sub}</QBadge>
         <QBadge>
-          <Link to={`/curso/${q.curso}`}>Curso {q.curso}</Link>
+          <Link to={`/curso/${q.curso}`}>Módulo {q.curso}</Link>
         </QBadge>
         <QBadge tone={q.dif === "difícil" ? "bad" : q.dif === "fácil" ? "ok" : "orange"}>{q.dif}</QBadge>
         {p.q[q.id] && <QBadge tone={p.q[q.id].ok ? "ok" : "bad"}>já {p.q[q.id].ok ? "acertou" : "errou"}</QBadge>}
@@ -179,6 +180,39 @@ export function BancoPage() {
         </p>
       </PageHeader>
 
+      {(() => {
+        const ans = Object.keys(p.q).filter((id) => bank.questoes.some((q) => q.id === id))
+        const ok = ans.filter((id) => p.q[id].ok).length
+        const taxa = pct(ok, ans.length)
+        const pronto = ans.length >= 100 && taxa >= site.metaExame
+        return (
+          <Card className={cn("mb-5", pronto ? "bg-success-bg ring-success/40" : "bg-brand-tint ring-primary/30")}>
+            <CardContent className="flex flex-col gap-4 lg:flex-row lg:items-center">
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-bold tracking-widest text-primary uppercase">Prontidão para o exame</div>
+                <div className="mt-1 text-lg font-bold">
+                  {!ans.length ? "Comece a responder para medir sua prontidão" : pronto ? "Você está no ponto de marcar a prova" : `Ainda não: ${taxa}% de acerto em ${ans.length} questões`}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Regra da turma: marque o exame só quando estiver acertando acima de {site.metaExame}%. Aqui contamos depois de pelo menos 100 questões respondidas.{" "}
+                  <Link to="/materiais" className="text-primary underline">
+                    Ver materiais da turma
+                  </Link>
+                </p>
+              </div>
+              <div className="w-full lg:w-48">
+                <div className="mb-1 flex justify-between text-xs text-muted-foreground">
+                  <span>{ans.length} respondidas</span>
+                  <span className="tabular-nums">{taxa}%</span>
+                </div>
+                <Progress value={taxa} aria-label="Taxa de acerto" />
+                <div className="mt-1 text-right text-xs text-muted-foreground">meta {site.metaExame}%</div>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })()}
+
       <Card className="mb-5">
         <CardHeader>
           <CardTitle>Seu desempenho por seção</CardTitle>
@@ -204,16 +238,16 @@ export function BancoPage() {
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
           <Field
-            label="Seção"
+            label="Seção do exame"
             value={f.secao}
             onChange={(v) => set("secao", v)}
-            items={[{ value: "all", label: "Todas as seções" }, ...bank.secoes.map((s) => ({ value: String(s.n), label: `${s.n}. ${s.titulo}` }))]}
+            items={[{ value: "all", label: "Todas as seções do exame" }, ...bank.secoes.map((s) => ({ value: String(s.n), label: `${s.n}. ${s.titulo}` }))]}
           />
           <Field
-            label="Curso da trilha"
+            label="Módulo da trilha"
             value={f.curso}
             onChange={(v) => set("curso", v)}
-            items={[{ value: "all", label: "Todos os cursos" }, ...cursosComQ.map((n) => ({ value: String(n), label: `${n}. ${site.cursos.find((c) => c.n === n)?.titulo}` }))]}
+            items={[{ value: "all", label: "Todos os módulos" }, ...cursosComQ.map((n) => ({ value: String(n), label: `${n}. ${site.cursos.find((c) => c.n === n)?.titulo}` }))]}
           />
           <Field
             label="Dificuldade"

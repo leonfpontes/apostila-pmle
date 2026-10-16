@@ -33,8 +33,8 @@ export function AllSimulados() {
     <Page>
       <PageHeader
         crumbs={[["Simulados"]]}
-        title="Simulados dos módulos"
-        sub="30 questões por módulo, no estilo do quiz da plataforma, com gabarito comentado. Reserve 30 minutos para cada um."
+        title="Simulados das seções"
+        sub="30 questões por seção, no estilo do quiz da plataforma, com gabarito comentado. Reserve 30 minutos para cada um."
       />
       <div className="grid gap-4 md:grid-cols-2">
         {items.map((d) => (
@@ -42,7 +42,7 @@ export function AllSimulados() {
             <Card className="h-full transition-colors group-hover:ring-primary">
               <CardHeader>
                 <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">
-                  Curso {d.c.n} · Módulo {d.m.n}
+                  Módulo {d.c.n} · Seção {d.m.n}
                 </div>
                 <CardTitle>{d.m.titulo}</CardTitle>
                 <CardDescription className="flex flex-wrap items-center gap-2">
@@ -85,7 +85,7 @@ export function SimuladoPage() {
   const key = `c${n}-m${m}`
   const { data: sim, error } = useJSON<Simulado>(`simulados/${key}.json`)
   useEffect(() => {
-    document.title = `Simulado · Módulo ${m} · Apostila PMLE`
+    document.title = `Simulado · Seção ${m} · Apostila PMLE`
     window.scrollTo(0, 0)
   }, [m])
   if (!c?.modulos?.some((x) => x.n === m)) return <NotFound />
@@ -94,7 +94,7 @@ export function SimuladoPage() {
   const prev = p.sim[key]
   return (
     <Page narrow>
-      <PageHeader crumbs={[...cursoCrumbs(n), [`Módulo ${m}`, `/curso/${n}/modulo/${m}`], ["Simulado"]]} kicker={`Simulado · Módulo ${m}`} title={tituloLimpo(sim.titulo)} />
+      <PageHeader crumbs={[...cursoCrumbs(n), [`Seção ${m}`, `/curso/${n}/modulo/${m}`], ["Simulado"]]} kicker={`Simulado · Seção ${m}`} title={tituloLimpo(sim.titulo)} />
       <ModuloTabs n={n} m={m} active="simulado" />
       {prev && (
         <p className="mb-3 text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export function SimuladoPage() {
       </Accordion>
       <Quiz
         key={key}
-        title={`Módulo ${m}`}
+        title={`Seção ${m}`}
         questions={sim.questoes.map((q) => ({
           id: q.n,
           stem: q.enunciado,
@@ -137,17 +137,17 @@ export function SimuladoPage() {
         const revisao = mod.materiais.find((x) => x.tipo === "revisao" || x.tipo === "glossario")
         return prev.best >= META_SIMULADO ? (
           <WhatsNext
-            titulo={`Módulo ${m} fechado com ${prev.best}%`}
-            texto={nextMod ? `Siga para o módulo ${nextMod.n}: ${nextMod.titulo}.` : "Feche o curso com as armadilhas e pratique as questões do exame."}
+            titulo={`Seção ${m} fechada com ${prev.best}%`}
+            texto={nextMod ? `Siga para a seção ${nextMod.n}: ${nextMod.titulo}.` : "Feche o módulo com as armadilhas e pratique as questões do exame."}
             to={nextMod ? `/curso/${n}/modulo/${nextMod.n}` : `/curso/${n}/armadilhas`}
-            cta={nextMod ? "Próximo módulo" : "Revisão final"}
+            cta={nextMod ? "Próxima seção" : "Revisão final"}
           />
         ) : (
           <WhatsNext
             titulo={`Sua melhor nota ainda está abaixo de ${META_SIMULADO}%`}
-            texto="Revise o módulo, refaça os flashcards que errou e tente o simulado de novo."
+            texto="Revise a seção, refaça os flashcards que errou e tente o simulado de novo."
             to={revisao ? `/curso/${n}/modulo/${m}/${revisao.tipo}` : `/curso/${n}/modulo/${m}/flashcards`}
-            cta="Revisar o módulo"
+            cta="Revisar a seção"
           />
         )
       })()}

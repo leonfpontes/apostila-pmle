@@ -38,13 +38,13 @@ export function ProgressoPage() {
 
   return (
     <Page>
-      <PageHeader crumbs={[["Meu progresso"]]} kicker="Acompanhamento pessoal" title={p.nome ? `Progresso de ${p.nome}` : "Meu progresso"} sub="Tudo o que você já estudou, o que falta em cada módulo e o próximo passo recomendado." />
+      <PageHeader crumbs={[["Meu progresso"]]} kicker="Acompanhamento pessoal" title={p.nome ? `Progresso de ${p.nome}` : "Meu progresso"} sub="Tudo o que você já estudou, o que falta em cada seção e o próximo passo recomendado." />
 
       <NextStepCard passo={passo} className="mb-6" />
 
       <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
-          ["Módulos concluídos", modsOk, mods.length],
+          ["Seções concluídas", modsOk, mods.length],
           ["Aulas estudadas", aulasOk, aulasTot],
           ["Flashcards dominados", fcOk, fcTot],
           ["Questões do exame", qAns, site.stats.questoes],
@@ -62,12 +62,12 @@ export function ProgressoPage() {
         ))}
       </div>
 
-      <h2 className="mb-3 text-xl font-bold">Módulos</h2>
+      <h2 className="mb-3 text-xl font-bold">Seções</h2>
       <Card className="mb-8 gap-0 overflow-x-auto py-0">
         <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b bg-muted/60 text-left text-xs text-muted-foreground">
-              <th className="px-4 py-2.5 font-medium">Módulo</th>
+              <th className="px-4 py-2.5 font-medium">Seção</th>
               <th className="px-3 py-2.5 font-medium">Aulas</th>
               <th className="px-3 py-2.5 font-medium">Revisão</th>
               <th className="px-3 py-2.5 font-medium">Flashcards</th>
@@ -93,7 +93,7 @@ export function ProgressoPage() {
                     <Link to={`/curso/${s.curso.n}/modulo/${s.modulo.n}`} className="flex items-center gap-2.5 font-medium hover:text-primary">
                       <ProgressRing value={s.pct} size={22} />
                       <span>
-                        <span className="text-xs text-muted-foreground">M{s.modulo.n} · </span>
+                        <span className="text-xs text-muted-foreground">S{s.modulo.n} · </span>
                         {s.modulo.titulo}
                       </span>
                     </Link>
@@ -133,7 +133,7 @@ export function ProgressoPage() {
         <Card>
           <CardHeader>
             <CardTitle>Trilha</CardTitle>
-            <CardDescription>{Object.keys(p.cursos).length} de 15 cursos marcados como concluídos.</CardDescription>
+            <CardDescription>{Object.keys(p.cursos).length} de 15 módulos marcados como concluídos.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" render={<Link to="/trilha" />} nativeButton={false}>

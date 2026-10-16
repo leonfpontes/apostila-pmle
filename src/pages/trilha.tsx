@@ -28,12 +28,12 @@ export function Trilha() {
     <Page narrow>
       <PageHeader
         crumbs={[["Trilha"]]}
-        kicker="15 cursos · ~56 h"
+        kicker="15 módulos · ~56 h"
         title={doc.title}
         sub="O caminho até a prova Professional Machine Learning Engineer. Marque o que já concluiu: o progresso fica salvo só neste navegador."
       />
       <div className="mb-6 flex items-center gap-3">
-        <Progress value={pct(done, 15)} className="flex-1" aria-label="Cursos concluídos" />
+        <Progress value={pct(done, 15)} className="flex-1" aria-label="Módulos concluídos" />
         <span className="text-sm text-muted-foreground tabular-nums">{done}/15</span>
       </div>
       <ol className="grid gap-2.5">

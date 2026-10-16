@@ -1,4 +1,4 @@
-// Jornada de estudo: o que o aluno já fez em cada módulo e qual é o próximo passo.
+// Jornada de estudo: o que o aluno já fez em cada seção e qual é o próximo passo.
 // Tudo é calculado a partir dos dados do site + progresso salvo no navegador.
 
 import type { Curso, Modulo, Site } from "./data"
@@ -51,8 +51,8 @@ export function moduloStatus(c: Curso, m: Modulo, p: Progresso): ModuloStatus {
     const visto = !!p.vistos?.[`c${c.n}-m${m.n}`]
     etapas.push({
       id: "revisao",
-      titulo: temRevisao ? "Revisar o módulo" : "Ler o glossário",
-      descricao: temRevisao ? "Roteiro de revisão, armadilhas e glossário com os termos do módulo." : "Os termos e serviços do módulo, com filtro.",
+      titulo: temRevisao ? "Revisar a seção" : "Ler o glossário",
+      descricao: temRevisao ? "Roteiro de revisão, armadilhas e glossário com os termos da seção." : "Os termos e serviços da seção, com filtro.",
       to: `${base}/${temRevisao ? "revisao" : "glossario"}`,
       feito: visto ? 1 : 0,
       total: 1,
@@ -117,7 +117,7 @@ export function proximoPasso(site: Site, p: Progresso): ProximoPasso {
     const m = mods[0]
     return {
       titulo: "Comece pela primeira aula",
-      contexto: `Curso ${m.curso.n} · Módulo ${m.modulo.n}: ${m.modulo.titulo}`,
+      contexto: `Módulo ${m.curso.n} · Seção ${m.modulo.n}: ${m.modulo.titulo}`,
       to: m.etapas[0].to,
       cta: "Começar a estudar",
     }
@@ -133,7 +133,7 @@ export function proximoPasso(site: Site, p: Progresso): ProximoPasso {
     }
     return {
       titulo,
-      contexto: `Curso ${atual.curso.n} · Módulo ${atual.modulo.n}: ${atual.modulo.titulo} · ${e.detalhe}`,
+      contexto: `Módulo ${atual.curso.n} · Seção ${atual.modulo.n}: ${atual.modulo.titulo} · ${e.detalhe}`,
       to: e.to,
       cta: e.id === "aulas" ? "Estudar a aula" : e.id === "simulado" ? "Fazer o simulado" : e.id === "flashcards" ? "Treinar flashcards" : "Revisar",
     }
@@ -141,7 +141,7 @@ export function proximoPasso(site: Site, p: Progresso): ProximoPasso {
   const c1 = site.cursos.find((c) => c.material)!
   return {
     titulo: "Revisão final e questões do exame",
-    contexto: `Você completou todos os módulos do curso ${c1.n}. Feche com as armadilhas e pratique o banco do exame.`,
+    contexto: `Você completou todas as seções do módulo ${c1.n}. Feche com as armadilhas e pratique o banco do exame.`,
     to: "/questoes",
     cta: "Praticar questões do exame",
   }

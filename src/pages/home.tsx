@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 
 const COMO = [
   ["aulas", "Estude as aulas", "Resumo em português de cada aula"],
-  ["revisao", "Revise o módulo", "Armadilhas e glossário"],
+  ["revisao", "Revise a seção", "Armadilhas e glossário"],
   ["flashcards", "Fixe com flashcards", "Revisão ativa por blocos"],
   ["simulado", "Teste no simulado", "30 questões, meta de 80%"],
 ] as const
@@ -74,7 +74,7 @@ export function Home() {
 
       {novo && (
         <section className="mb-8">
-          <h2 className="mb-3 text-xl font-bold">Como funciona cada módulo</h2>
+          <h2 className="mb-3 text-xl font-bold">Como funciona cada seção</h2>
           <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {COMO.map(([id, t, d], i) => {
               const Icon = ETAPA_ICON[id]
@@ -99,7 +99,7 @@ export function Home() {
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <h2 className="text-xl font-bold">
-          Curso {c1.n}: {c1.titulo}
+          Módulo {c1.n}: {c1.titulo}
         </h2>
         <Link to="/progresso" className="text-sm font-medium text-primary hover:underline">
           Ver meu progresso
@@ -112,7 +112,7 @@ export function Home() {
               <CardHeader>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Módulo {st.modulo.n}</div>
+                    <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">Seção {st.modulo.n}</div>
                     <CardTitle className="mt-0.5 leading-snug">{st.modulo.titulo}</CardTitle>
                   </div>
                   <ProgressRing value={st.pct} size={28} />
@@ -132,7 +132,7 @@ export function Home() {
                 <CardTitle className="flex items-center gap-2">
                   <TriangleAlertIcon className="size-4 text-brand-orange" /> Armadilhas e cheat-sheet
                 </CardTitle>
-                <CardDescription>Para a véspera da prova: as armadilhas do curso e as tabelas mais cobradas.</CardDescription>
+                <CardDescription>Para a véspera da prova: as armadilhas do módulo e as tabelas mais cobradas.</CardDescription>
               </CardHeader>
             </Card>
           </Link>
@@ -144,7 +144,7 @@ export function Home() {
           <CardHeader>
             <CardTitle>A trilha completa</CardTitle>
             <CardDescription>
-              15 cursos até a prova. {done ? `Você marcou ${plural(done, "curso concluído", "cursos concluídos")}.` : "Os cursos em azul já têm material."}
+              15 módulos até a prova. {done ? `Você marcou ${plural(done, "módulo concluído", "módulos concluídos")}.` : "Os módulos em azul já têm material."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -155,7 +155,7 @@ export function Home() {
                     render={
                       <Link
                         to={`/curso/${c.n}`}
-                        aria-label={`Curso ${c.n}: ${c.titulo}`}
+                        aria-label={`Módulo ${c.n}: ${c.titulo}`}
                         className={cn(
                           "grid size-7 place-items-center rounded-full text-xs font-bold",
                           p.cursos[c.n] ? "bg-success text-white" : c.material ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
@@ -169,7 +169,7 @@ export function Home() {
                 </Tooltip>
               ))}
             </div>
-            <Progress value={pct(done, 15)} aria-label="Cursos concluídos" />
+            <Progress value={pct(done, 15)} aria-label="Módulos concluídos" />
           </CardContent>
           <CardFooter>
             <Link to="/trilha" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
@@ -189,7 +189,7 @@ export function Home() {
           </CardContent>
           <CardFooter>
             <Link to="/questoes" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              Praticar por seção, curso ou dificuldade <ArrowRightIcon className="size-4" />
+              Praticar por seção, módulo ou dificuldade <ArrowRightIcon className="size-4" />
             </Link>
           </CardFooter>
         </Card>

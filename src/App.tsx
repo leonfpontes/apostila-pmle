@@ -17,6 +17,7 @@ import { BancoPage } from "@/pages/banco"
 import { BuscaPage } from "@/pages/busca"
 import { ComecePage } from "@/pages/comece"
 import { ProgressoPage } from "@/pages/progresso"
+import { MateriaisPage } from "@/pages/materiais"
 import { useParams } from "react-router-dom"
 
 function Armadilhas() {
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="/trilha" element={<Trilha />} />
             <Route path="/comece" element={<ComecePage />} />
             <Route path="/progresso" element={<ProgressoPage />} />
+            <Route path="/materiais" element={<MateriaisPage />} />
             <Route path="/cronograma" element={<DocPage id="cronograma" crumbs={[["Trilha", "/trilha"]]} />} />
             <Route path="/exame" element={<DocPage id="exame-guia" crumbs={[["Exame PMLE"]]} />} />
             <Route path="/questoes" element={<BancoPage />} />

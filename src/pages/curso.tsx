@@ -18,7 +18,7 @@ import { DocPage } from "./doc-page"
 
 export const cursoCrumbs = (n: number): [string, string][] => [
   ["Trilha", "/trilha"],
-  [`Curso ${n}`, `/curso/${n}`],
+  [`Módulo ${n}`, `/curso/${n}`],
 ]
 
 export function CursoPage() {
@@ -32,13 +32,13 @@ function CursoComMaterial({ c }: { c: TCurso }) {
   const { data: doc } = useJSON<Doc>(`docs/c${c.n}-curso.json`)
   const prog = useProgress()
   useEffect(() => {
-    document.title = `Curso ${c.n} · Apostila PMLE`
+    document.title = `Módulo ${c.n} · Apostila PMLE`
     window.scrollTo(0, 0)
   }, [c.n])
   if (!doc) return <Loading />
   return (
     <Page>
-      <PageHeader crumbs={[["Trilha", "/trilha"], [`Curso ${c.n}`]]} kicker={`Curso ${c.n} de 15 · ${c.duracao}`} title={c.titulo} sub={doc.summary} />
+      <PageHeader crumbs={[["Trilha", "/trilha"], [`Módulo ${c.n}`]]} kicker={`Módulo ${c.n} de 15 · ${c.duracao}`} title={c.titulo} sub={doc.summary} />
       <div className="grid gap-4 md:grid-cols-2">
         {c.modulos!.map((m) => (
           <Card key={m.n}>
@@ -68,7 +68,7 @@ function CursoComMaterial({ c }: { c: TCurso }) {
             )}
             <CardFooter className="mt-auto">
               <Button variant="outline" render={<Link to={`/curso/${c.n}/modulo/${m.n}`} />} nativeButton={false}>
-                Abrir módulo <ArrowRightIcon />
+                Abrir seção <ArrowRightIcon />
               </Button>
             </CardFooter>
           </Card>
@@ -97,19 +97,19 @@ function CursoSemMaterial({ c }: { c: TCurso }) {
   const site = useSite()
   const { data } = useJSON<{ md: string }>(`roteiros/${c.n}.json`)
   useEffect(() => {
-    document.title = `Curso ${c.n} · Apostila PMLE`
+    document.title = `Módulo ${c.n} · Apostila PMLE`
     window.scrollTo(0, 0)
   }, [c.n])
   const prev = site.cursos.find((x) => x.n === c.n - 1)
   const next = site.cursos.find((x) => x.n === c.n + 1)
   return (
     <Page narrow>
-      <PageHeader crumbs={[["Trilha", "/trilha"], [`Curso ${c.n}`]]} kicker={`Curso ${c.n} de 15 · ${c.duracao}`} title={c.titulo} />
+      <PageHeader crumbs={[["Trilha", "/trilha"], [`Módulo ${c.n}`]]} kicker={`Módulo ${c.n} de 15 · ${c.duracao}`} title={c.titulo} />
       <Alert className="mb-6">
         <InfoIcon />
         <AlertTitle>Material em breve</AlertTitle>
         <AlertDescription>
-          Os resumos, flashcards e simulados deste curso entram aqui conforme as aulas forem transcritas. Abaixo está o roteiro oficial, item a item.
+          Os resumos, flashcards e simulados deste módulo entram aqui conforme as aulas forem transcritas. Abaixo está o roteiro oficial, item a item.
         </AlertDescription>
       </Alert>
       {c.questoes > 0 && (
@@ -119,7 +119,7 @@ function CursoSemMaterial({ c }: { c: TCurso }) {
               <CardTitle className="flex items-center gap-2">
                 <TargetIcon className="size-4 text-brand-orange" /> {c.questoes} questões do exame ligadas a este curso
               </CardTitle>
-              <CardDescription>Pratique logo depois de terminar o curso, enquanto o assunto está fresco.</CardDescription>
+              <CardDescription>Pratique logo depois de terminar o módulo, enquanto o assunto está fresco.</CardDescription>
             </CardHeader>
           </Card>
         </Link>
@@ -127,8 +127,8 @@ function CursoSemMaterial({ c }: { c: TCurso }) {
       <h2 className="mb-3 text-xl font-bold">Roteiro</h2>
       {data ? <Markdown>{data.md}</Markdown> : null}
       <Pager
-        prev={prev && { to: `/curso/${prev.n}`, small: "Curso anterior", label: prev.titulo }}
-        next={next && { to: `/curso/${next.n}`, small: "Próximo curso", label: next.titulo }}
+        prev={prev && { to: `/curso/${prev.n}`, small: "Módulo anterior", label: prev.titulo }}
+        next={next && { to: `/curso/${next.n}`, small: "Próximo módulo", label: next.titulo }}
       />
       <Footer />
     </Page>
@@ -188,7 +188,7 @@ export function ModuloPage() {
   const mod = c?.modulos?.find((x) => x.n === m)
   const p = useProgress()
   useEffect(() => {
-    document.title = `Módulo ${m} · Apostila PMLE`
+    document.title = `Seção ${m} · Apostila PMLE`
     window.scrollTo(0, 0)
   }, [m])
   if (!c || !mod) return <NotFound />
@@ -196,10 +196,10 @@ export function ModuloPage() {
   const itens = mod.itens.length ? mod.itens : mod.aulas.map((id) => ({ id, titulo: aulaMap.get(id)!.titulo, tipo: "🎬", estrelas: 0 }))
   return (
     <Page narrow>
-      <PageHeader crumbs={[...cursoCrumbs(n), [`Módulo ${m}`]]} kicker={`Curso ${n} · Módulo ${m}`} title={mod.titulo} />
+      <PageHeader crumbs={[...cursoCrumbs(n), [`Seção ${m}`]]} kicker={`Módulo ${n} · Seção ${m}`} title={mod.titulo} />
       <ModuloTabs n={n} m={m} active="aulas" />
       <ModuleRoadmap status={moduloStatus(c, mod, p)} />
-      <h2 className="mb-3 text-lg font-bold">Aulas e atividades do módulo</h2>
+      <h2 className="mb-3 text-lg font-bold">Aulas e atividades da seção</h2>
       <Card className="gap-0 py-0">
         {itens.map((it, k) => {
           const a = aulaMap.get(it.id)
@@ -262,7 +262,7 @@ export function ModuloDocPage({ tipo }: { tipo: "revisao" | "glossario" }) {
   return (
     <DocPage
       id={`c${n}-m${m}-${tipo}`}
-      crumbs={[...cursoCrumbs(n), [`Módulo ${m}`, `/curso/${n}/modulo/${m}`]]}
+      crumbs={[...cursoCrumbs(n), [`Seção ${m}`, `/curso/${n}/modulo/${m}`]]}
       filter={tipo === "glossario"}
       tabs={<ModuloTabs n={n} m={m} active={tipo} />}
     />
@@ -280,13 +280,13 @@ function proximoDestino(c: TCurso, aula: Aula) {
   const st = moduloStatus(c, mod, { ...getProgress(), aulas: { ...getProgress().aulas, [`c${c.n}-${aula.id}`]: 1 } })
   if (st.proxima?.id === "aulas") {
     const pend = st.proxima.to.split("/").pop()
-    return { to: st.proxima.to, label: `Última aula do módulo. Ainda falta estudar a aula ${pend}.`, cta: `Concluir e ir para a aula ${pend}` }
+    return { to: st.proxima.to, label: `Última aula da seção. Ainda falta estudar a aula ${pend}.`, cta: `Concluir e ir para a aula ${pend}` }
   }
   if (st.proxima)
-    return { to: st.proxima.to, label: `Última aula do módulo. Próximo passo: ${st.proxima.titulo.toLowerCase()}.`, cta: `Concluir e ${st.proxima.titulo.toLowerCase()}` }
+    return { to: st.proxima.to, label: `Última aula da seção. Próximo passo: ${st.proxima.titulo.toLowerCase()}.`, cta: `Concluir e ${st.proxima.titulo.toLowerCase()}` }
   const nextMod = c.modulos!.find((x) => x.n > mod.n && x.aulas.length)
-  if (nextMod) return { to: `/curso/${c.n}/modulo/${nextMod.n}`, label: `Fim do módulo ${mod.n}. Próximo: módulo ${nextMod.n}`, cta: "Concluir e ir para o próximo módulo" }
-  return { to: "/progresso", label: "Última aula do curso", cta: "Concluir e ver meu progresso" }
+  if (nextMod) return { to: `/curso/${c.n}/modulo/${nextMod.n}`, label: `Fim da seção ${mod.n}. Próxima: seção ${nextMod.n}`, cta: "Concluir e ir para a próxima seção" }
+  return { to: "/progresso", label: "Última aula do módulo", cta: "Concluir e ver meu progresso" }
 }
 
 export function AulaPage({ transcricao = false }: { transcricao?: boolean }) {
@@ -317,7 +317,7 @@ export function AulaPage({ transcricao = false }: { transcricao?: boolean }) {
       id={transcricao ? `c${n}-transc-${id}` : `c${n}-aula-${id}`}
       title={`Aula ${id} — ${aula.titulo}`}
       sub={aula.tema || undefined}
-      crumbs={[...cursoCrumbs(n), [`Módulo ${aula.modulo}`, `/curso/${n}/modulo/${aula.modulo}`]]}
+      crumbs={[...cursoCrumbs(n), [`Seção ${aula.modulo}`, `/curso/${n}/modulo/${aula.modulo}`]]}
       toc={!transcricao}
       tabs={
         <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-3">

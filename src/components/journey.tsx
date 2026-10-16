@@ -44,16 +44,16 @@ function etapaPct(e: Etapa) {
   return e.total ? Math.round((e.feito / e.total) * 100) : 0
 }
 
-// Roteiro do módulo: as quatro etapas com status e o botão do próximo passo
+// Roteiro da seção: as quatro etapas com status e o botão do próximo passo
 export function ModuleRoadmap({ status, compact }: { status: ModuloStatus; compact?: boolean }) {
   const { etapas, proxima, done } = status
   return (
     <Card className="mb-6 gap-0 py-0">
       <div className="flex flex-wrap items-center gap-3 border-b px-4 py-3">
         <div>
-          <div className="text-sm font-semibold">Roteiro do módulo</div>
+          <div className="text-sm font-semibold">Roteiro da seção</div>
           <div className="text-xs text-muted-foreground">
-            {done ? "Módulo concluído. Revise quando quiser." : `Etapa ${etapas.findIndex((e) => !e.done) + 1} de ${etapas.length}`}
+            {done ? "Seção concluída. Revise quando quiser." : `Etapa ${etapas.findIndex((e) => !e.done) + 1} de ${etapas.length}`}
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2">

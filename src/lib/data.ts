@@ -20,6 +20,7 @@ export type Curso = {
 export type Secao = { n: number; titulo: string; peso: number | null; subsecoes: { id: string; titulo: string }[] }
 export type Site = {
   geradoEm: string
+  metaExame: number
   stats: { aulas: number; flashcards: number; simulado: number; questoes: number; cursosComMaterial: number }
   cursos: Curso[]
   secoes: Secao[]
@@ -84,7 +85,7 @@ export function useJSON<T>(path: string | null) {
 }
 
 export const MATERIAIS = {
-  revisao: { label: "Revisão", desc: "Roteiro de revisão e armadilhas do módulo" },
+  revisao: { label: "Revisão", desc: "Roteiro de revisão e armadilhas da seção" },
   glossario: { label: "Glossário", desc: "Termos e serviços do Google Cloud" },
   flashcards: { label: "Flashcards", desc: "Revisão espaçada por blocos" },
   simulado: { label: "Simulado", desc: "Questões no estilo da prova" },

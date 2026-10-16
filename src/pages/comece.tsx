@@ -23,22 +23,22 @@ import { useSite } from "@/lib/site"
 const PASSOS = [
   {
     icon: RouteIcon,
-    titulo: "Escolha o curso na trilha",
-    texto: "A trilha tem 15 cursos na ordem da certificação. Os que já têm material aparecem em azul; os outros mostram o roteiro oficial.",
+    titulo: "Escolha o módulo na trilha",
+    texto: "A trilha tem 15 módulos na ordem da certificação. Os que já têm material aparecem em azul; os outros mostram o roteiro oficial.",
     to: "/trilha",
     cta: "Ver a trilha",
   },
   {
     icon: NotebookTextIcon,
-    titulo: "Estude as aulas do módulo",
+    titulo: "Estude as aulas da seção",
     texto: "Cada aula tem um resumo em português com os tópicos que caem na prova, glossário, flashcards e questões no fim. Marque como estudada ao terminar.",
     to: "/curso/1/modulo/2",
-    cta: "Abrir o primeiro módulo",
+    cta: "Abrir a primeira seção",
   },
   {
     icon: BookOpenCheckIcon,
-    titulo: "Revise o módulo",
-    texto: "A revisão junta as armadilhas e o roteiro do módulo; o glossário tem filtro para achar um termo rápido.",
+    titulo: "Revise a seção",
+    texto: "A revisão junta as armadilhas e o roteiro da seção; o glossário tem filtro para achar um termo rápido.",
   },
   {
     icon: LayersIcon,
@@ -57,7 +57,7 @@ const PASSOS = [
   {
     icon: TargetIcon,
     titulo: "Pratique as questões do exame",
-    texto: "Depois de cada curso, faça as questões do banco ligadas a ele. No fim da trilha, monte provas de 50 questões com os pesos oficiais.",
+    texto: `Depois de cada módulo, faça as questões do banco ligadas a ele. No fim da trilha, monte provas de 50 questões com os pesos oficiais. A regra da turma: marque o exame só quando estiver acertando acima de 85%.`,
     to: "/questoes",
     cta: "Abrir o banco",
   },
@@ -78,7 +78,7 @@ export function ComecePage() {
         sub="Um roteiro único para todos da turma: o mesmo caminho, no seu ritmo, com o progresso salvo no seu navegador."
       />
 
-      <h2 className="mb-4 text-xl font-bold">O caminho de cada módulo</h2>
+      <h2 className="mb-4 text-xl font-bold">O caminho de cada seção</h2>
       <ol className="relative mb-10 grid gap-3 before:absolute before:top-5 before:bottom-5 before:left-5 before:w-px before:bg-border">
         {PASSOS.map((p, i) => (
           <li key={i} className="relative grid grid-cols-[2.5rem_1fr] gap-4">
@@ -102,6 +102,15 @@ export function ComecePage() {
         ))}
       </ol>
 
+      <Link to="/materiais" className="group mb-10 block">
+        <Card className="bg-brand-tint ring-primary/30 transition-colors group-hover:ring-primary">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">Materiais da turma</CardTitle>
+            <CardDescription>Guia oficial do exame, link da trilha no Google Skills, Sample Questions, simulados externos e o livro de preparação.</CardDescription>
+          </CardHeader>
+        </Card>
+      </Link>
+
       <h2 className="mb-4 text-xl font-bold">Bom saber</h2>
       <div className="mb-10 grid gap-3 sm:grid-cols-2">
         <Card size="sm">
@@ -121,10 +130,20 @@ export function ComecePage() {
         <Card size="sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
+              <RouteIcon className="size-4 text-primary" /> Módulos e seções
+            </CardTitle>
+            <CardDescription>
+              A trilha tem 15 <strong>módulos</strong> (os itens do Learning Path). Dentro do módulo 1, as partes do conteúdo são <strong>seções</strong>. Nas notas das aulas, "Module N" na fala do instrutor fica sempre uma seção atrás da nossa numeração.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
               <TriangleAlertIcon className="size-4 text-brand-orange" /> Vertex AI agora é Agent Platform
             </CardTitle>
             <CardDescription>
-              A ementa nova do curso chama de <strong>Agent Platform</strong> o que a documentação e as questões antigas chamam de <strong>Vertex AI</strong>. Saiba os dois nomes.
+              A ementa nova do módulo 1 chama de <strong>Agent Platform</strong> o que a documentação e as questões antigas chamam de <strong>Vertex AI</strong>. Saiba os dois nomes.
             </CardDescription>
           </CardHeader>
         </Card>

@@ -124,6 +124,7 @@ function cleanMd(body, file = '') {
   let md = body.replace(/<!--[\s\S]*?-->/g, '');
   md = dropSections(md, DROP_PER_FILE[file] || []);
   md = md.replace(/^\s*#\s+.*\n+/, ''); // o H1 vira o título da página
+  md = md.replace(/\s*\(também no projeto Claude[^)]*\)/g, '').replace(/\s*\((no |do )?projeto Claude[^)]*\)/g, '');
   // parágrafo de navegação do vault ("Material de estudo do Módulo N … Faz parte de …"): o site já tem abas
   md = md.replace(/^\s*Material de estudo do Módulo[^\n]*(\n(?!\n)[^\n]*)*\n+/, '');
   md = callouts(md);
@@ -147,7 +148,33 @@ const plain = (md) =>
 const DOCS = []; // {id, title, route, md}
 const SEARCH = [];
 
+// Nomenclatura da turma: os 15 itens da trilha são MÓDULOS; as partes do
+// módulo 1 (que as notas chamam de "Módulo 2…6") são SEÇÕES.
+const cap = (orig, word) => (orig[0] === orig[0].toUpperCase() ? word[0].toUpperCase() + word.slice(1) : word);
+function termosTrilha(t) {
+  return String(t || '')
+    .replace(/\b([Cc])ursos\b/g, (m) => cap(m, 'módulos'))
+    .replace(/\b([Cc])urso\b/g, (m) => cap(m, 'módulo'));
+}
+function termosSecao(t) {
+  return String(t || '')
+    .replace(/\b([Mm])ódulos (\**)(\d)/g, (m, c, b, n) => `${c === 'M' ? 'S' : 's'}eções ${b}${n}`)
+    .replace(/\b([Mm])ódulo (\**)(\d)/g, (m, c, b, n) => `${c === 'M' ? 'S' : 's'}eção ${b}${n}`)
+    .replace(/\b([Cc])ursos (\**)(\d)/g, (m, c, b, n) => `${c === 'C' ? 'M' : 'm'}ódulos ${b}${n}`)
+    .replace(/\b([Cc])urso (\**)(\d)/g, (m, c, b, n) => `${c === 'C' ? 'M' : 'm'}ódulo ${b}${n}`)
+    // concordância: "do Seção" → "da Seção", "nos Seções" → "nas Seções" …
+    .replace(/\b([DdNn])o(s?) (\**)([Ss])eç/g, (m, a, pl, b, S) => `${a}a${pl} ${b}${S}eç`)
+    .replace(/\b([Pp])elo(s?) (\**)([Ss])eç/g, (m, a, pl, b, S) => `${a}ela${pl} ${b}${S}eç`)
+    .replace(/\bao(s?) (\**)([Ss])eç/g, (m, pl, b, S) => `à${pl} ${b}${S}eç`)
+    .replace(/\b([Ee])ste (\**)([Ss])eç/g, (m, e, b, S) => `${e}sta ${b}${S}eç`)
+    .replace(/\b([Oo]) (\**)([Ss])eção/g, (m, o, b, S) => `${o === "O" ? "A" : "a"} ${b}${S}eção`);
+}
+const termos = (route, t) => (String(route).startsWith('#/curso/') ? termosSecao(t) : termosTrilha(t));
+
 function addDoc({ id, title, route, md, kind, summary }) {
+  md = termos(route, md);
+  title = termos(route, title).replace(/^Google AI\/ML — /, '');
+  summary = termos(route, summary);
   DOCS.push({ id, title, route, kind });
   writeJSON(`docs/${id}.json`, { id, title, route, kind, summary: summary || '', md });
   // um registro de busca por seção (H2/H3)
@@ -367,8 +394,8 @@ function parseSecao(body, secaoN) {
       enunciado,
       opcoes,
       resposta,
-      nota,
-      explicacao: wikilinks(expl.join('\n').trim()),
+      nota: termosTrilha(nota),
+      explicacao: termosTrilha(wikilinks(expl.join('\n').trim())),
       conceitos,
       nomeAtual,
     });
@@ -388,7 +415,7 @@ function parseTrilha(body) {
   for (const ch of roteiro.split(/\n(?=### )/)) {
     const m = ch.match(/^### (\d+)\.\s+(.*?)\s+·\s+([^\n✅]*?)\s*(✅)?\s*$/m);
     if (!m) continue;
-    cursos.push({ n: +m[1], titulo: m[2].trim(), duracao: m[3].trim(), roteiro: cleanMd('# x\n' + ch.slice(m[0].length).trim()) });
+    cursos.push({ n: +m[1], titulo: m[2].trim(), duracao: m[3].trim(), roteiro: termosTrilha(cleanMd('# x\n' + ch.slice(m[0].length).trim())) });
   }
   return cursos;
 }
@@ -450,7 +477,7 @@ for (const [n, c] of Object.entries(cursosCfg)) {
 }
 for (const [name, rel] of VAULT_TO_CONTENT) {
   const t = noteTitle(rel);
-  if (t) TITLES.set(name, t.replace(/^Google AI\/ML — /, ''));
+  if (t) TITLES.set(name, t.replace(/^Google AI\/ML — /, '').replace(/^Curso — /, ''));
 }
 
 // 2) Trilha, cronograma, exame
@@ -510,7 +537,7 @@ for (const t of trilhaCursos) {
           itens.push({ id: cells[0], titulo: label, tipo: cells[2] || '', estrelas: (cells[1].match(/⭐/g) || []).length });
         }
         const nota = (sec.match(/^\*\((.*)\)\*$/m) || [])[1];
-        modulos.set(+h[1], { n: +h[1], titulo: h[2].trim(), nota: nota ? wikilinks(nota) : '', itens, aulas: [], materiais: [] });
+        modulos.set(+h[1], { n: +h[1], titulo: h[2].trim(), nota: nota ? termosSecao(wikilinks(nota)) : '', itens, aulas: [], materiais: [] });
       }
     }
 
@@ -529,7 +556,7 @@ for (const t of trilhaCursos) {
       const tFile = path.join(aulasDir, f.replace(/^R - /, 'T - '));
       const titulo = note.title.replace(/^(Módulo \d+,\s*)?Aula\s+[\d.]+\s*[—-]\s*/, '');
       const docTitle = `Aula ${id} — ${titulo}`;
-      const aula = { id, modulo: +mm, titulo, data, resumo: note.meta.summary || '', transcricao: exists(tFile) };
+      const aula = { id, modulo: +mm, titulo, data, resumo: termosSecao(note.meta.summary || ''), transcricao: exists(tFile) };
       aulas.push(aula);
       const { meta: aulaMeta, md: aulaMd } = extractAulaMeta(cleanMd(note.body));
       aula.tema = aulaMeta.tema || '';
@@ -560,7 +587,7 @@ for (const t of trilhaCursos) {
             const blocos = parseFlashcards(note.body);
             const total = blocos.reduce((s, b) => s + b.cards.length, 0);
             stats.flashcards += total;
-            writeJSON(`flashcards/c${t.n}-m${mn}.json`, { titulo: note.title, blocos });
+            writeJSON(`flashcards/c${t.n}-m${mn}.json`, JSON.parse(termosSecao(JSON.stringify({ titulo: note.title, blocos }))));
             mod.materiais.push({ tipo, total });
             for (const b of blocos) SEARCH.push({ r: route, t: note.title, h: b.titulo, a: '', k: 'Flashcards', x: plain(b.cards.map((c) => c.q + ' — ' + c.a).join(' · ')).slice(0, 1500) });
           } else if (tipo === 'simulado') {
@@ -568,7 +595,7 @@ for (const t of trilhaCursos) {
             stats.simulado += sim.questoes.length;
             const semGabarito = sim.questoes.filter((q) => q.opcoes.length && !q.resposta).map((q) => q.n);
             if (semGabarito.length) console.warn(`  ! módulo ${mn}: questões sem gabarito detectado: ${semGabarito.join(', ')}`);
-            writeJSON(`simulados/c${t.n}-m${mn}.json`, { titulo: note.title, ...sim });
+            writeJSON(`simulados/c${t.n}-m${mn}.json`, JSON.parse(termosSecao(JSON.stringify({ titulo: note.title, ...sim }))));
             mod.materiais.push({ tipo, total: sim.questoes.length });
             SEARCH.push({ r: route, t: note.title, h: '', a: '', k: 'Simulado', x: plain(sim.questoes.map((q) => q.enunciado).join(' · ')).slice(0, 1500) });
           } else {
@@ -587,7 +614,15 @@ for (const t of trilhaCursos) {
   cursos.push(curso);
 }
 
-writeJSON('site.json', { geradoEm: new Date().toISOString(), stats, cursos, secoes: bank.secoes, docs: DOCS.map(({ id, title, route, kind }) => ({ id, title, route, kind })) });
+// Materiais da turma (links da planilha) e meta de acerto antes do exame
+const materiaisPath = path.join(CONTENT, 'trilha/materiais.json');
+const materiais = exists(materiaisPath) ? JSON.parse(read(materiaisPath)) : { grupos: [] };
+delete materiais._leia;
+writeJSON('materiais.json', materiais);
+for (const g of materiais.grupos)
+  for (const it of g.itens) SEARCH.push({ r: '#/materiais', t: 'Materiais da turma', h: it.titulo, a: '', k: 'Material', x: `${it.categoria}. ${it.descricao} ${(it.capitulos || []).join(', ')}` });
+
+writeJSON('site.json', { geradoEm: new Date().toISOString(), metaExame: materiais.metaExame || 85, stats, cursos, secoes: bank.secoes, docs: DOCS.map(({ id, title, route, kind }) => ({ id, title, route, kind })) });
 writeJSON('search.json', SEARCH);
 
 console.log(`✓ build concluído em public/data/`);

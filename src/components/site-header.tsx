@@ -88,10 +88,10 @@ function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
         {q.trim().length < 2 ? (
           <CommandGroup heading="Atalhos">
             {[
-              ["/trilha", "Trilha dos 15 cursos"],
+              ["/trilha", "Trilha dos 15 módulos"],
               ["/questoes", `Banco de ${site.stats.questoes} questões`],
               ["/flashcards", "Flashcards"],
-              ["/simulados", "Simulados dos módulos"],
+              ["/simulados", "Simulados das seções"],
               ["/curso/1/armadilhas", "Armadilhas e cheat-sheet do curso 1"],
             ].map(([to, label]) => (
               <CommandItem key={to} value={label} onSelect={() => go(to)}>

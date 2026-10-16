@@ -50,7 +50,7 @@ export function AllFlashcards() {
             <Card className="h-full transition-colors group-hover:ring-primary">
               <CardHeader>
                 <div className="text-xs font-bold tracking-widest text-brand-orange-ink uppercase">
-                  Curso {d.c.n} · Módulo {d.m.n}
+                  Módulo {d.c.n} · Seção {d.m.n}
                 </div>
                 <CardTitle>{d.m.titulo}</CardTitle>
                 <CardDescription>
@@ -76,7 +76,7 @@ export function FlashcardsPage() {
   const c = useCurso(n)
   const { data: deck, error } = useJSON<Deck>(`flashcards/c${n}-m${m}.json`)
   useEffect(() => {
-    document.title = `Flashcards · Módulo ${m} · Apostila PMLE`
+    document.title = `Flashcards · Seção ${m} · Apostila PMLE`
     window.scrollTo(0, 0)
   }, [m])
   if (!c?.modulos?.some((x) => x.n === m)) return <NotFound />
@@ -84,7 +84,7 @@ export function FlashcardsPage() {
   if (!deck) return <Loading />
   return (
     <Page narrow>
-      <PageHeader crumbs={[...cursoCrumbs(n), [`Módulo ${m}`, `/curso/${n}/modulo/${m}`], ["Flashcards"]]} kicker={`Flashcards · Módulo ${m}`} title={tituloLimpo(deck.titulo)} />
+      <PageHeader crumbs={[...cursoCrumbs(n), [`Seção ${m}`, `/curso/${n}/modulo/${m}`], ["Flashcards"]]} kicker={`Flashcards · Seção ${m}`} title={tituloLimpo(deck.titulo)} />
       <ModuloTabs n={n} m={m} active="flashcards" />
       <Trainer deck={deck} prefix={`c${n}-m${m}`} key={`${n}-${m}`} next={c.modulos!.find((x) => x.n === m)!.materiais.some((x) => x.tipo === "simulado") ? `/curso/${n}/modulo/${m}/simulado` : undefined} />
       <Footer />
@@ -203,7 +203,7 @@ function Trainer({ deck, prefix, next }: { deck: Deck; prefix: string; next?: st
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Zerar o progresso deste módulo?</DialogTitle>
+              <DialogTitle>Zerar o progresso desta seção?</DialogTitle>
               <DialogDescription>Todos os cartões voltam a contar como não dominados.</DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -252,7 +252,7 @@ function Trainer({ deck, prefix, next }: { deck: Deck; prefix: string; next?: st
             </div>
             {next && (
               <div className="w-full text-left">
-                <WhatsNext titulo="Próximo passo: testar no simulado" texto="Quando dominar a maior parte dos cartões, confira se o conteúdo ficou com as 30 questões do módulo." to={next} cta="Ir para o simulado" />
+                <WhatsNext titulo="Próximo passo: testar no simulado" texto="Quando dominar a maior parte dos cartões, confira se o conteúdo ficou com as 30 questões da seção." to={next} cta="Ir para o simulado" />
               </div>
             )}
           </CardContent>

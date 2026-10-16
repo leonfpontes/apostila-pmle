@@ -19,7 +19,7 @@ related: ["[[curso-intro-ai-ml-google-cloud]]", "[[trilha-pmle-cronograma]]", "[
 # Trilha Professional Machine Learning Engineer (Google Cloud)
 
 ## Objetivo
-Concluir os 15 cursos da trilha e fazer a prova **Professional Machine Learning Engineer**. Cronograma intensivo de 5 h/dia em [[trilha-pmle-cronograma]] (fim previsto em 26/10/2026, ou 30/10 sem fins de semana).
+Concluir os 15 módulos da trilha e fazer a prova **Professional Machine Learning Engineer**. Cronograma intensivo de 5 h/dia em [[trilha-pmle-cronograma]] (fim previsto em 26/10/2026, ou 30/10 sem fins de semana).
 
 ## Notas do projeto
 - [[curso-intro-ai-ml-google-cloud]]: curso 1, concluído em 14/10/2026, com todas as aulas resumidas
@@ -27,6 +27,26 @@ Concluir os 15 cursos da trilha e fazer a prova **Professional Machine Learning 
 - [[trilha-pmle-cronograma]]: plano dia a dia
 - [[pmle-guia-do-exame]]: guia oficial do exame cruzado com os cursos da trilha (pesos, subseções, lacunas)
 - [[pmle-banco-de-questoes]]: 283 questões de prática por seção e por curso, com gabarito revisado e simulador interativo
+
+## Materiais da turma (planilha, aba "mapa geral para certificação")
+
+| Material | Para quê | Link |
+|---|---|---|
+| Guia oficial do exame | Tópicos avaliados no exame | https://services.google.com/fh/files/misc/new_exam_guide.pdf |
+| Inscrição na trilha | Tutorial para se tornar Google Cloud Partner Advantage | apresentação interna ATRA (link na planilha) |
+| Acesso à trilha | Learning Path no Google Skills | https://partner.skills.google/paths/84 |
+| Sample Questions | Prévia oficial do Google para medir a evolução | formulário do Google (link na planilha) |
+| PPT de dicas | Como funciona a prova e dicas de estudo | apresentação interna (link na planilha) |
+| Simulados | ExamTopics, Scribd e pasta com 285 questões (a base do [[pmle-banco-de-questoes]]) | examtopics.com · scribd.com · Drive da turma |
+| Livro | Conteúdo do exame em 14 capítulos, com questões no fim de cada um | Drive da turma (link na planilha) |
+| Simulado final ATRA | Dois simulados finais com questões novas | a ser disponibilizado |
+
+**Regra da turma para marcar o exame:** só depois de acertar **acima de 85%** nos simulados finais.
+
+Roteiro que a turma da Atra está seguindo: **15 módulos, ~56 h estimadas**, na
+ordem da planilha de acompanhamento. O curso 1 tem hub próprio em [[curso-intro-ai-ml-google-cloud]].
+
+Cronograma intensivo (5 h/dia, 15/10 a 26/10): [[trilha-pmle-cronograma]].
 
 ## Roteiro completo, item a item
 
@@ -103,7 +123,7 @@ Summary · Quiz ✅ · Readings 📖
 **Fechamento** — Course summary · Production ML systems readings 📖 · All quiz
 questions and answers · Course resources · Course Survey
 
-### 6. Machine Learning Operations (MLOps): Getting Started · 4 h 30
+### 6. Machine Learning Operations (MLOps): Getting Started · 4 h 30 min
 
 Course introduction · Introduction to MLOps: why and when to employ MLOps ·
 ML practitioners' pain points · The concept of DevOps in ML · ML lifecycle ·
@@ -139,7 +159,7 @@ Course introduction · The evolution of MLOps · MLOps framework for generative 
 Navigating generative AI: embracing nuances and adapting MLOps · Summary ·
 Course Survey
 
-### 11. MLOps with Agent Platform: Model Evaluation · 2 h 30
+### 11. Machine Learning Operations (MLOps) with Agent Platform: Model Evaluation · 2 h 30 min
 
 Welcome · Introduction to model evaluation · Model evaluation within MLOps ·
 Model evaluation challenges and solutions offered by Agent Platform · Quiz ✅ ·
