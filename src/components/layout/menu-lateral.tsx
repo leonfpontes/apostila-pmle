@@ -122,7 +122,7 @@ function SecaoNoMenu({ modulo, secao }: { modulo: ModuloComMaterial; secao: Seca
             const para = rotas.aula(modulo.n, id)
             return (
               <SidebarMenuSubItem key={id}>
-                <SidebarMenuSubButton isActive={pathname.startsWith(para)} render={<Link to={para} onClick={fechar} />}>
+                <SidebarMenuSubButton isActive={pathname.startsWith(para)} render={<Link to={para} onClick={fechar} />} className="h-auto min-h-7 py-1 [&>span:last-child]:whitespace-normal">
                   <span className="w-6 shrink-0 text-xs text-muted-foreground tabular-nums">{id}</span>
                   <span>{aula.titulo}</span>
                   {dados.aulas[ProgressStore.chaves.aula(modulo.n, id)] && <span className="ml-auto size-1.5 shrink-0 rounded-full bg-success" title="Estudada" />}
